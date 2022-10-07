@@ -4,11 +4,11 @@
 
 In this assignment, you will write a program to see if a peg solitaire puzzle has a solution whilst using a `Zipper` data structure. The zipper data structure allows data to have a focus element with constant-time access.
 
-The one-dimensional peg solitaire puzzle has a row of positions. Each position is either empty or has a peg. For instance:
+The one-dimensional peg solitaire puzzle has a sequence of positions. Each position is either empty or has a peg. We call this sequence the _game state_. For instance:
 ```
 X X X X . X X X X
 ```
-`X` indicates a peg, and `.` indicates an empty position. A peg can jump (either to the left or right) over another peg towards an empty position and removes the peg it jumped over. Thus, we can make the third peg jump over the fourth in the above example and get:
+`X` indicates a peg, and `.` indicates an empty position. A peg can jump (either to the left or right) over another peg towards an empty position and removes the peg it jumped over. Thus, we can make the third peg jump over the fourth in the above example and get the following game state.
 ```
 X X . . X X X X X
 ```
@@ -75,6 +75,8 @@ Given a length `n`, define functions `generateStates` and `generateLinearStates`
 
 Define these functions as appropriate instances of `unfoldr` (from `Data.List`).
 
+Note: You can use these functions in the remainder of the Assignment to have a broad test set.
+
 #### Exercise 3: `Zipper`, `toZipper`, `fromZipper`, `goRight`, `goLeft`
 We can store the normal one-dimensional game state in a list. However, we can only access the first element in a list in constant time. Another way to do this is to introduce a `Zipper` structure, we can do this for most data structures, but in this assignment, we focus on the zipper of a list. In a Zipper, you 'walk' through the data structure present. You store the current value under focus, the remainder of the data structure, and a history of how you walked through the structure. For a list, you go from left to right through the list. So the focus is the current value, the remainder of the data structure is the list of all values to the right of the focus, and the history is all the values left of the focus. When you store the history in reverse order, you can prepend the focus when moving to the right.
 
@@ -83,8 +85,9 @@ For instance the list `[1,2,3,4,5]`, we can have `3` as focus. Then, `[4,5]` is 
 Define the data structure `Zipper a = ...`, which stores a list of type `[a]` as a zipper structure. Then, define helper functions `toZipper` and `fromZipper` that turn a list into a zipper structure and visa versa. Also, define functions `goRight` and `goLeft` that change the focus of a zipper one position to the right or left. These can be partial functions, or they don't change the position when the focus is already at the end.
 
 #### Exercise 4: `makeMoves` via `unfoldr`
-Define function `makeMoves`, which, given a game state stored as a Zipper, generates a list of all game states that can be reached by making one valid move. You should also store the next game states as a zipper. The list of all game states can be a normal list.
+Define function `makeMoves`, which, given a Zipper for the current game state, generates a (normal) list of all game states that can be reached by making one valid move. The returned gamestates should be zippers.
 
+Hint: You should use the function `unfoldr` twice. Once for the left side (history) of the zipper, and once for the right side (the remainder). 
 #### Exercise 5: `foldT`
 Define function `foldT`, which is the catamorphism factory for type `Tree`, to help transform a `Tree` into some other value. Compare this to `foldr` and `foldTree` (from `Data.Tree`).
 

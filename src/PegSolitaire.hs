@@ -28,6 +28,7 @@ module PegSolitaire
     hasSolution,
     allSolutions,
     getSolution,
+    trySolution,
   )
 where
 import Data.List (unfoldr)
@@ -70,3 +71,4 @@ makeGameTree = error "Implement, document, and test this function"
 hasSolution = error "Implement, document, and test this function"
 allSolutions = error "Implement, document, and test this function"
 getSolution = error "Implement, document, and test this function"
+trySolution = error "Implement, document, and test this function"

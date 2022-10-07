@@ -33,8 +33,8 @@ these ten programming exercises, you also have to write tests in
 
 ### Grading
 
-We grade you on exercises 1- and 4 based on your submission in the first week.
-We grade you on exercises 5- 9 based on your submission in the second week.
+We grade you on exercises 1 through 3 based on your submission in the first week.
+We grade you on exercises 4 through 9 based on your submission in the second week.
 Exercise 10 is a bonus exercise, which you do to challenge yourself.
 
 
@@ -70,12 +70,8 @@ Exercise 10 is a bonus exercise, which you do to challenge yourself.
 #### Exercise 1: `isWinning`
 Define function `isWinning` that, given a Peg solitaire game, determines if the current state is a winning state. That is, there is only one Peg left in the game.
 
-#### Exercise 2: `generateStates` and `generateLinearStates` via `unfoldr`
-Given a length `n`, define functions `generateStates` and `generateLinearStates` that generate states of size `n`. Function `generateStates` gives back a list of all possible states of size `n`. Function `generateLinearStates` gives back all possible states with `n-1` positions filled with pegs and one empty position.
-
-Define these functions as appropriate instances of `unfoldr` (from `Data.List`).
-
-Note: You can use these functions in the remainder of the Assignment to have a broad test set.
+#### Exercise 2: `foldT`
+Define function `foldT`, which is the catamorphism factory for type `Tree`, to help transform a `Tree` into some other value. Compare this to `foldr` and `foldTree` (from `Data.Tree`).
 
 #### Exercise 3: `Zipper`, `toZipper`, `fromZipper`, `goRight`, `goLeft`
 We can store the normal one-dimensional game state in a list. However, we can only access the first element in a list in constant time. Another way to do this is to introduce a `Zipper` structure, we can do this for most data structures, but in this assignment, we focus on the zipper of a list. In a Zipper, you 'walk' through the data structure present. You store the current value under focus, the remainder of the data structure, and a history of how you walked through the structure. For a list, you go from left to right through the list. So the focus is the current value, the remainder of the data structure is the list of all values to the right of the focus, and the history is all the values left of the focus. When you store the history in reverse order, you can prepend the focus when moving to the right.
@@ -84,12 +80,17 @@ For instance the list `[1,2,3,4,5]`, we can have `3` as focus. Then, `[4,5]` is 
 
 Define the data structure `Zipper a = ...`, which stores a list of type `[a]` as a zipper structure. Then, define helper functions `toZipper` and `fromZipper` that turn a list into a zipper structure and visa versa. Also, define functions `goRight` and `goLeft` that change the focus of a zipper one position to the right or left. These can be partial functions, or they don't change the position when the focus is already at the end.
 
-#### Exercise 4: `makeMoves` via `unfoldr`
+#### Exercise 4: `generateStates` and `generateLinearStates` via `unfoldr`
+Given a length `n`, define functions `generateStates` and `generateLinearStates` that generate states of size `n`. Function `generateStates` gives back a list of all possible states of size `n`. Function `generateLinearStates` gives back all possible states with `n-1` positions filled with pegs and one empty position.
+
+Define these functions as appropriate instances of `unfoldr` (from `Data.List`).
+
+Note: You can use these functions in the remainder of the Assignment to have a broad test set.
+
+#### Exercise 5: `makeMoves` via `unfoldr`
 Define function `makeMoves`, which, given a Zipper for the current game state, generates a (normal) list of all game states that can be reached by making one valid move. The returned gamestates should be zippers.
 
 Hint: You should use the function `unfoldr` twice. Once for the left side (history) of the zipper, and once for the right side (the remainder). 
-#### Exercise 5: `foldT`
-Define function `foldT`, which is the catamorphism factory for type `Tree`, to help transform a `Tree` into some other value. Compare this to `foldr` and `foldTree` (from `Data.Tree`).
 
 #### Exercise 6: `unfoldT`
 Define function `unfoldT`, which is the anamorphism factory for type `Tree`, to help create a `Tree` from a seed. Compare this to `unfoldr` (from `Data.List`) and `unfoldTree` (from `Data.Tree`).

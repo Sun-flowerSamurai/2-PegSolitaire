@@ -54,7 +54,7 @@ We grade you on exercises 5- 10 based on your submission in the second week.
     something to work, comment out the problematic parts to keep the project
     working.
 
-4. In completing this assignment, you deliver three files:
+4. In completing this assignment, you deliver two files:
 
     * The Haskell file [`src/PegSolitaire.hs`](src/PegSolitaire)
     * The Haskell file [`test/Spec.hs`](test/Spec.hs)

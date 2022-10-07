@@ -6,59 +6,59 @@ import PegSolitaire
 
 main :: IO ()
 main = hspec $ do
-  describe "isWinning" $ 
+  describe "isWinning" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "generateStates" $ 
+  describe "generateStates" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "generateLinearStates" $ 
+  describe "generateLinearStates" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "fromZipper" $ 
+  describe "fromZipper" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "toZipper" $ 
+  describe "toZipper" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "goRight" $ 
+  describe "goRight" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "goLeft" $ 
+  describe "goLeft" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "makeMoves" $ 
+  describe "makeMoves" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "foldT" $ 
+  describe "foldT" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "unfoldT" $ 
+  describe "unfoldT" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "makeGameTree" $ 
+  describe "makeGameTree" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "hasSolution" $ 
+  describe "hasSolution" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "allSolutions" $ 
+  describe "allSolutions" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-  describe "getSolution" $ 
+  describe "getSolution" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 

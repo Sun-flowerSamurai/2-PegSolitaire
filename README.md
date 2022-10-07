@@ -34,7 +34,8 @@ these ten programming exercises, you also have to write tests in
 ### Grading
 
 We grade you on exercises 1- and 4 based on your submission in the first week.
-We grade you on exercises 5- 10 based on your submission in the second week.
+We grade you on exercises 5- 9 based on your submission in the second week.
+Exercise 10 is a bonus exercise, which you do to challenge yourself.
 
 
 ### Getting started
@@ -99,7 +100,8 @@ Define function `hasSolution` that determines if a starting game state has a sol
 #### Exercise 9 `allSolutions` as hylo
 Define function `allSolutions` that gives all possible winning end states as a hylomorphism.
 
-#### Exercise 10: `getSolution`
-Define function `getSolution` that gives back a sequence of moves that a player can take to get a solution if a starting game state has a solution.
+#### [Bonus] Exercise 10: `getSolution`, `trySolution`
+Define function `getSolution` that gives back a sequence of moves that a player can take to get a solution if a starting game state has a solution. Also define function `trySolution`, that given the outcome of `getSolution` can try the moves and gives the game state after taking a sequence of moves.
 
 Note: We do not specify how this sequence of moves should look like. Find a suitable data type yourself that fits here.
+Important: Do not break previously defined functions when working on this exercise.

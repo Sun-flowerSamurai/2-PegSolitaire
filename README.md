@@ -22,11 +22,11 @@ In this assignment, we want you to analyse a starting position and decide if it 
 
 ## Assignment
 
-This assignment consists of TODO programming exercises.
+This assignment consists of ten programming exercises.
 
-In the TODO programming exercises, you must explicitly
+In the ten programming exercises, you must explicitly
 add a type declaration to every function you define in Haskell and add Haddock documentation. As part of
-these TODO programming exercises, you also have to write tests in
+these ten programming exercises, you also have to write tests in
 [`test/Spec.hs`](test/Spec.hs) for each function we ask of you to define.
 
 ### Split over two weeks

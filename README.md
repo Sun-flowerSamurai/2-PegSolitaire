@@ -33,8 +33,8 @@ these ten programming exercises, you also have to write tests in
 
 ### Grading
 
-We grade you on exercises 1 through 3 based on your submission in the first week.
-We grade you on exercises 4 through 9 based on your submission in the second week.
+We grade you on exercises 1 through 4 based on your submission in the first week.
+We grade you on exercises 5 through 9 based on your submission in the second week.
 Exercise 10 is a bonus exercise, which you do to challenge yourself.
 
 

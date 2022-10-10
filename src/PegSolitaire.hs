@@ -59,6 +59,7 @@ isWinning :: Pegs -> Bool
 -- i.e. whether there is only one peg left on the board.
 isWinning = (== 1) . countPegs
   where 
+    countPegs :: Pegs -> Integer
     countPegs = sum . map (\ v -> if v == Peg then 1 else 0)
 
 generateStates = error "Implement, document, and test this function"

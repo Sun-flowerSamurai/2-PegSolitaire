@@ -69,9 +69,6 @@ foldT l n = rec
   rec (Node x ts) = n x (map rec ts) --hier kan je n zien als binary functie, bv cons
 
 
-generateStates = error "Implement, document, and test this function"
-generateLinearStates = error "Implement, document, and test this function"
-
 data Zipper a = Zip [a] a [a] deriving Show --History, Focus, Remainder
 -- Weet niet hoe ik de history om kan draaien met Show
 
@@ -89,6 +86,18 @@ goLeft :: Zipper a -> Zipper a
 goLeft (Zip [] a rem) = Zip [] a rem 
 goLeft (Zip (x:xs) a rem) = Zip xs x (a:rem)
 
+listmult :: Int -> [a] -> [a] --nodig voor genlinstates
+listmult 0 xs = []
+listmult n xs = xs ++ listmult (n-1) xs 
+
+generateStates :: Int -> [Pegs]
+-- generateStates n = unfoldr (\v -> if fst v == 0 then Nothing else Just()) (n,0)
+generateStates = error "o"
+
+generateLinearStates :: Int -> [Pegs]
+-- vind m een beetje lelijk en jammer dat we listmult nodig hebben
+-- maar ie werkt
+generateLinearStates n = unfoldr (\v -> if v == 0 then Nothing else Just(listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)) n
 makeMoves = error "Implement, document, and test this function"
 
 

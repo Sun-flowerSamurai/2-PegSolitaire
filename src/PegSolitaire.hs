@@ -1,8 +1,8 @@
 {-|
 Module      : PegSolitaire
 Description : 
-Copyright   : STUDENT NAME 1 (ID)
-              STUDENT NAME 2 (ID)
+Copyright   : Matt Verhoeven (1728342)
+              David Chen (1742477)
 
 
 -}

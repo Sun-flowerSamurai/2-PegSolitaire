@@ -66,7 +66,7 @@ foldT :: (a->b) -> (a->[b]->b) -> Tree a -> b --leaffunc, nodefunc, tree
 foldT l n = rec 
  where
   rec (Leaf x) = l x
-  rec (Node x ts) = n x (map rec ts)
+  rec (Node x ts) = n x (map rec ts) --hier kan je n zien als binary functie, bv cons
 
 
 generateStates = error "Implement, document, and test this function"

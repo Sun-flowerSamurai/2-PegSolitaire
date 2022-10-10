@@ -72,12 +72,23 @@ foldT l n = rec
 generateStates = error "Implement, document, and test this function"
 generateLinearStates = error "Implement, document, and test this function"
 
--- data Zipper a = 
+data Zipper a = Zip [a] a [a] deriving Show --History, Focus, Remainder
+-- Weet niet hoe ik de history om kan draaien met Show
 
-fromZipper = error "Implement, document, and test this function"
-toZipper = error "Implement, document, and test this function"
-goRight = error "Implement, document, and test this function"
-goLeft = error "Implement, document, and test this function"
+fromZipper :: Zipper a -> [a]
+fromZipper (Zip hist a rem) = reverse hist ++ [a] ++ rem
+
+toZipper :: [a] -> Zipper a
+toZipper xs = Zip [] (head xs) (tail xs)
+
+goRight :: Zipper a -> Zipper a
+goRight (Zip hist a []) = Zip hist a []
+goRight (Zip hist a (x:xs)) = Zip (a:hist) x xs
+
+goLeft :: Zipper a -> Zipper a
+goLeft (Zip [] a rem) = Zip [] a rem 
+goLeft (Zip (x:xs) a rem) = Zip xs x (a:rem)
+
 makeMoves = error "Implement, document, and test this function"
 
 

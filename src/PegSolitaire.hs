@@ -62,6 +62,13 @@ isWinning = (== 1) . countPegs
     countPegs :: Pegs -> Integer
     countPegs = sum . map (\ v -> if v == Peg then 1 else 0)
 
+foldT :: (a->b) -> (a->[b]->b) -> Tree a -> b --leaffunc, nodefunc, tree
+foldT l n = rec 
+ where
+  rec (Leaf x) = l x
+  rec (Node x ts) = n x (map rec ts)
+
+
 generateStates = error "Implement, document, and test this function"
 generateLinearStates = error "Implement, document, and test this function"
 
@@ -73,8 +80,6 @@ goRight = error "Implement, document, and test this function"
 goLeft = error "Implement, document, and test this function"
 makeMoves = error "Implement, document, and test this function"
 
-
-foldT = error "Implement, document, and test this function"
 
 unfoldT = error "Implement, document, and test this function"
 makeGameTree = error "Implement, document, and test this function"

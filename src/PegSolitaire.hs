@@ -57,13 +57,9 @@ stringToPegs = map f
 isWinning :: Pegs -> Bool
 -- ^Determines whether the Pegs are in a winning state, 
 -- i.e. whether there is only one peg left on the board.
-isWinning = rec False
-  where
-    rec b []     = b
-    rec b (x:xs) = rec (b `xor` (x == Peg)) xs  
-     
-    xor :: Bool -> Bool -> Bool
-    xor p q = (p || q) && not (p && q)
+isWinning = (== 1) . countPegs
+  where 
+    countPegs = sum . map (\ v -> if v == Peg then 1 else 0)
 
 generateStates = error "Implement, document, and test this function"
 generateLinearStates = error "Implement, document, and test this function"
@@ -75,7 +71,10 @@ toZipper = error "Implement, document, and test this function"
 goRight = error "Implement, document, and test this function"
 goLeft = error "Implement, document, and test this function"
 makeMoves = error "Implement, document, and test this function"
+
+
 foldT = error "Implement, document, and test this function"
+
 unfoldT = error "Implement, document, and test this function"
 makeGameTree = error "Implement, document, and test this function"
 hasSolution = error "Implement, document, and test this function"

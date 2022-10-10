@@ -7,8 +7,24 @@ import PegSolitaire
 main :: IO ()
 main = hspec $ do
   describe "isWinning" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should consider an empty board losing" $ do
+          isWinning ([Empty, Empty, Empty, Empty, Empty]:: Pegs) `shouldBe` (False :: Bool)
+
+    it "should consider a board with (only) one peg winning" $ do
+          isWinning ([Peg]:: Pegs) `shouldBe` (True :: Bool)
+
+    it "should consider a board with one peg winning" $ do
+          isWinning ([Empty, Empty, Empty, Peg, Empty]:: Pegs) `shouldBe` (True :: Bool)
+
+    it "should consider a board with two consecutive pegs losing" $ do
+          isWinning ([Empty, Empty, Empty, Peg, Peg]:: Pegs) `shouldBe` (False :: Bool)
+
+    it "should consider a board with two non-consecutive pegs losing" $ do
+          isWinning ([Empty, Empty, Empty, Peg, Empty, Peg]:: Pegs) `shouldBe` (False :: Bool)
+
+    it "should consider a board with multiple pegs losing" $ do
+          isWinning ([Peg, Peg, Peg, Empty, Peg, Empty, Peg]:: Pegs) `shouldBe` (False :: Bool)
+
 
   describe "generateStates" $ do
     it "should have tests" $ do

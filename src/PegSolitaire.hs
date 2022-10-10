@@ -54,7 +54,17 @@ stringToPegs = map f
 
 ----------------------------------
 
-isWinning = error "Implement, document, and test this function"
+isWinning :: Pegs -> Bool
+-- ^Determines whether the Pegs are in a winning state, 
+-- i.e. whether there is only one peg left on the board.
+isWinning = rec False
+  where
+    rec b []     = b
+    rec b (x:xs) = rec (b `xor` (x == Peg)) xs  
+     
+    xor :: Bool -> Bool -> Bool
+    xor p q = (p || q) && not (p && q)
+
 generateStates = error "Implement, document, and test this function"
 generateLinearStates = error "Implement, document, and test this function"
 

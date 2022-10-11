@@ -97,9 +97,14 @@ to2 l n = if n >= 2^(l-1) then 1: to2 (l-1) (n - 2^(l-1)) else 0 : to2 (l-1) n
 
 generateStates :: Int -> [Pegs]
 -- kijk hier wordt ie fucked
-generateStates n = map (map (\v -> if v == 1 then Peg else Empty)) (generateBinaries n)
+-- werkt wel maar ziet er lelijk uit
+-- wat we zouden kunnen doen is de 1en en 0en gelijk naar pegs converten in de generateBinaries
+-- weet niet of het dan efficienter of duidelijker is maar je maakt er dan wel één unfold van wat ze miss willen
+generateStates n = map numsToPeg (generateBinaries n)
  where
+  numsToPeg = map (\v -> if v == 1 then Peg else Empty)
   generateBinaries n = unfoldr (\w -> if w == -1 then Nothing else Just(to2 n w, w-1)) (2^n - 1)
+  -- ik vind zelf w == -1 ook beetje lelijk maargoed
 
 generateLinearStates :: Int -> [Pegs]
 -- vind m een beetje lelijk en jammer dat we listmult nodig hebben

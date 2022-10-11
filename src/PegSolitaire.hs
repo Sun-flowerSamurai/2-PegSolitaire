@@ -90,14 +90,23 @@ listmult :: Int -> [a] -> [a] --nodig voor genlinstates
 listmult 0 xs = []
 listmult n xs = xs ++ listmult (n-1) xs 
 
+to2 :: Int -> Int -> [Int] -- length, getal, base 2
+-- assumption is dat n < 2^l
+to2 0 n = []
+to2 l n = if n >= 2^(l-1) then 1: to2 (l-1) (n - 2^(l-1)) else 0 : to2 (l-1) n
+
 generateStates :: Int -> [Pegs]
--- generateStates n = unfoldr (\v -> if fst v == 0 then Nothing else Just()) (n,0)
-generateStates = error "o"
+-- kijk hier wordt ie fucked
+generateStates n = map (map (\v -> if v == 1 then Peg else Empty)) (generateBinaries n)
+ where
+  generateBinaries n = unfoldr (\w -> if w == -1 then Nothing else Just(to2 n w, w-1)) (2^n - 1)
 
 generateLinearStates :: Int -> [Pegs]
 -- vind m een beetje lelijk en jammer dat we listmult nodig hebben
 -- maar ie werkt
-generateLinearStates n = unfoldr (\v -> if v == 0 then Nothing else Just(listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)) n
+generateLinearStates n = unfoldr rho n
+ where 
+  rho = (\v -> if v == 0 then Nothing else Just(listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1))
 makeMoves = error "Implement, document, and test this function"
 
 

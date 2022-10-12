@@ -87,7 +87,7 @@ fromZipper (Zip h f r) = reverse h ++ [f] ++ r
 
 
 toZipper :: [a] -> Zipper a
-toZipper []     = error "Cannot contruct the zipper of an empty list"
+toZipper []     = error "Zipper of empty list is undefined"
 toZipper (x:xs) = Zip [] x xs
 
 

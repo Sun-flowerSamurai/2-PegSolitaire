@@ -62,38 +62,53 @@ isWinning = (== 1) . countPegs
     countPegs :: Pegs -> Integer
     countPegs = sum . map (\ v -> if v == Peg then 1 else 0)
 
-foldT :: (a->b) -> (a->[b]->b) -> Tree a -> b --leaffunc, nodefunc, tree
+
+foldT :: (a -> b)    -- Leaf function
+  -> (a -> [b] -> b) -- Node function
+  -> Tree a          -- input tree
+  -> b               -- folded result
+-- ^The foldT function acts as a catamorphism factory for the Tree type.
+-- The Tree type has two constructors and similarly the foldT function 
+-- takes two functions. The function l is applied to the leaves and the 
+-- function n is applied to the nodes.
 foldT l n = rec 
  where
   rec (Leaf x) = l x
-  rec (Node x ts) = n x (map rec ts) --hier kan je n zien als binary functie, bv cons
+  rec (Node x ts) = n x (map rec ts) -- hier kan je n zien als binary functie, bv cons
 
 
 data Zipper a = Zip [a] a [a] deriving Show --History, Focus, Remainder
 -- Weet niet hoe ik de history om kan draaien met Show
 
+
 fromZipper :: Zipper a -> [a]
 fromZipper (Zip hist a rem) = reverse hist ++ [a] ++ rem
 
+
 toZipper :: [a] -> Zipper a
 toZipper xs = Zip [] (head xs) (tail xs)
+
 
 goRight :: Zipper a -> Zipper a
 goRight (Zip hist a []) = Zip hist a []
 goRight (Zip hist a (x:xs)) = Zip (a:hist) x xs
 
+
 goLeft :: Zipper a -> Zipper a
 goLeft (Zip [] a rem) = Zip [] a rem 
 goLeft (Zip (x:xs) a rem) = Zip xs x (a:rem)
+
 
 listmult :: Int -> [a] -> [a] --nodig voor genlinstates
 listmult 0 xs = []
 listmult n xs = xs ++ listmult (n-1) xs 
 
+
 to2 :: Int -> Int -> [Int] -- length, getal, base 2
 -- assumption is dat n < 2^l
 to2 0 n = []
 to2 l n = if n >= 2^(l-1) then 1: to2 (l-1) (n - 2^(l-1)) else 0 : to2 (l-1) n
+
 
 generateStates :: Int -> [Pegs]
 -- kijk hier wordt ie fucked
@@ -106,12 +121,15 @@ generateStates n = map numsToPeg (generateBinaries n)
   generateBinaries n = unfoldr (\w -> if w == -1 then Nothing else Just(to2 n w, w-1)) (2^n - 1)
   -- ik vind zelf w == -1 ook beetje lelijk maargoed
 
+
 generateLinearStates :: Int -> [Pegs]
 -- vind m een beetje lelijk en jammer dat we listmult nodig hebben
 -- maar ie werkt
 generateLinearStates n = unfoldr rho n
  where 
   rho = (\v -> if v == 0 then Nothing else Just(listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1))
+
+
 makeMoves = error "Implement, document, and test this function"
 
 

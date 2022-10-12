@@ -77,12 +77,13 @@ foldT l n = rec
   rec (Node x ts) = n x (map rec ts) -- hier kan je n zien als binary functie, bv cons
 
 
-data Zipper a = Zip [a] a [a] deriving Show --History, Focus, Remainder
--- Weet niet hoe ik de history om kan draaien met Show
+data Zipper a = Zip [a] a [a]  -- History, Focus, Remainder
 
+instance (Show a) => Show (Zipper a) where
+    show (Zip h f r) = show (show (reverse h) ++ "(" ++ show f ++ ")" ++ show r) 
 
 fromZipper :: Zipper a -> [a]
-fromZipper (Zip hist a rem) = reverse hist ++ [a] ++ rem
+fromZipper (Zip h a r) = reverse h ++ [a] ++ r
 
 
 toZipper :: [a] -> Zipper a
@@ -90,13 +91,13 @@ toZipper xs = Zip [] (head xs) (tail xs)
 
 
 goRight :: Zipper a -> Zipper a
-goRight (Zip hist a []) = Zip hist a []
-goRight (Zip hist a (x:xs)) = Zip (a:hist) x xs
+goRight (Zip h a []) = Zip h a []
+goRight (Zip h a (x:xs)) = Zip (a:h) x xs
 
 
 goLeft :: Zipper a -> Zipper a
-goLeft (Zip [] a rem) = Zip [] a rem 
-goLeft (Zip (x:xs) a rem) = Zip xs x (a:rem)
+goLeft (Zip [] a r) = Zip [] a r
+goLeft (Zip (x:xs) a r) = Zip xs x (a:r)
 
 
 listmult :: Int -> [a] -> [a] --nodig voor genlinstates

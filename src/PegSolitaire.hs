@@ -15,7 +15,7 @@ module PegSolitaire
     isWinning,
     generateStates,
     generateLinearStates,
-    -- Zipper(..),
+    Zipper(..),
     fromZipper,
     toZipper,
     goRight,
@@ -77,10 +77,10 @@ foldT l n = rec
   rec (Node x ts) = n x (map rec ts) -- hier kan je n zien als binary functie, bv cons
 
 
-data Zipper a = Zip [a] a [a]  -- History, Focus, Remainder
+data Zipper a = Zip [a] a [a] deriving (Eq, Ord) -- History, Focus, Remainder
 
 instance (Show a) => Show (Zipper a) where
-    show (Zip h f r) = show (show (reverse h) ++ "(" ++ show f ++ ")" ++ show r) 
+    show (Zip h f r) = show (show (reverse h) ++ " (" ++ show f ++ ") " ++ show r) 
 
 fromZipper :: Zipper a -> [a]
 fromZipper (Zip h f r) = reverse h ++ [f] ++ r

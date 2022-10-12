@@ -49,8 +49,15 @@ main = hspec $ do
   describe "toZipper" $ do
     it "zipper of empty list is undefined" $ do
           evaluate (toZipper []) `shouldThrow` anyErrorCall 
-    it "zipper of list with one element " $ do
-          toZipper [1] `shouldBe` Zip [] 1 []
+    it "zipper of list with one element should have empty history and remainder" $ 
+      do toZipper ([1]:: [Integer]) 
+      `shouldBe` Zip ([]::[Integer]) (1:: Integer) ([]:: [Integer])
+    it "toZipper needs to handle lists over different types I" $ 
+      do toZipper ([1, 2, 3, 4]:: [Integer]) 
+      `shouldBe` Zip ([]::[Integer]) (1:: Integer) ([2, 3, 4]:: [Integer])
+    it "toZipper needs to handle lists over different types II" $ 
+      do toZipper ("abcdefg" :: String) 
+      `shouldBe` Zip ([]:: String) ('a':: Char) ("bcdefg":: String)
 
 
 

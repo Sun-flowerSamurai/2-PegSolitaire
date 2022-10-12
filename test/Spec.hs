@@ -1,3 +1,11 @@
+{-|
+Description : Test cases for the PegSolitaire functions.
+Copyright   : Matt Verhoeven (1728342)
+              David Chen (1742477)
+
+
+-}
+
 import           Test.Hspec
 import           Test.Hspec.QuickCheck
 import           Test.QuickCheck
@@ -40,7 +48,11 @@ main = hspec $ do
 
   describe "toZipper" $ do
     it "zipper of empty list is undefined" $ do
-          toZipper [] `shouldThrow` anyErrorCall 
+          evaluate (toZipper []) `shouldThrow` anyErrorCall 
+    it "zipper of list with one element " $ do
+          toZipper [1] `shouldBe` Zip [] 1 []
+
+
 
   describe "goRight" $ do
     it "should have tests" $ do

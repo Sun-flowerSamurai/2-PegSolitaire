@@ -58,6 +58,9 @@ main = hspec $ do
     it "toZipper needs to handle lists over different types II" $ 
       do toZipper ("abcdefg" :: String) 
       `shouldBe` Zip ([]:: String) ('a':: Char) ("bcdefg":: String)
+    it "toZipper needs to handle lists over different types III" $ 
+      do toZipper ([Peg, Empty, Peg, Empty, Peg] :: Pegs) 
+      `shouldBe` Zip ([]:: Pegs) (Peg:: Peg) ([Empty, Peg, Empty, Peg]:: Pegs)
 
 
 

@@ -39,8 +39,8 @@ main = hspec $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
   describe "toZipper" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "zipper of empty list is undefined" $ do
+          toZipper [] `shouldThrow` anyErrorCall 
 
   describe "goRight" $ do
     it "should have tests" $ do

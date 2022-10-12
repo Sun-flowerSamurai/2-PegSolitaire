@@ -83,21 +83,22 @@ instance (Show a) => Show (Zipper a) where
     show (Zip h f r) = show (show (reverse h) ++ "(" ++ show f ++ ")" ++ show r) 
 
 fromZipper :: Zipper a -> [a]
-fromZipper (Zip h a r) = reverse h ++ [a] ++ r
+fromZipper (Zip h f r) = reverse h ++ [f] ++ r
 
 
 toZipper :: [a] -> Zipper a
-toZipper xs = Zip [] (head xs) (tail xs)
+toZipper []     = error "Cannot contruct the zipper of an empty list"
+toZipper (x:xs) = Zip [] x xs
 
 
 goRight :: Zipper a -> Zipper a
-goRight (Zip h a []) = Zip h a []
-goRight (Zip h a (x:xs)) = Zip (a:h) x xs
+goRight (Zip h f []) = Zip h f []
+goRight (Zip h f (x:xs)) = Zip (f:h) x xs
 
 
 goLeft :: Zipper a -> Zipper a
-goLeft (Zip [] a r) = Zip [] a r
-goLeft (Zip (x:xs) a r) = Zip xs x (a:r)
+goLeft (Zip [] f r) = Zip [] f r
+goLeft (Zip (x:xs) f r) = Zip xs x (f:r)
 
 
 listmult :: Int -> [a] -> [a] --nodig voor genlinstates

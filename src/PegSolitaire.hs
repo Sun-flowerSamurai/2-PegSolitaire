@@ -79,24 +79,37 @@ foldT l n = rec
 
 data Zipper a = Zip [a] a [a] deriving (Eq, Ord) -- History, Focus, Remainder
 
+-- |Shows a zipper with its history reversed, the focus parenthesized 
+-- and the remainder unchanged.
 instance (Show a) => Show (Zipper a) where
     show (Zip h f r) = show (show (reverse h) ++ " (" ++ show f ++ ") " ++ show r) 
 
+
 fromZipper :: Zipper a -> [a]
+-- ^Turns a zipper structure back into a list 
+-- with all the elements in the appropriate order.
 fromZipper (Zip h f r) = reverse h ++ [f] ++ r
 
 
 toZipper :: [a] -> Zipper a
+-- ^Turns a list into a Zipper with the head of the list
+-- at its focus, empty history and the tail of the list as its remainder.
 toZipper []     = error "Zipper of empty list is undefined"
 toZipper (x:xs) = Zip [] x xs
 
 
 goRight :: Zipper a -> Zipper a
+-- ^Moves the focus of a zipper one to the right
+-- if the focus is already the at the last element,
+-- the zipper remains unchanged.
 goRight (Zip h f []) = Zip h f []
 goRight (Zip h f (x:xs)) = Zip (f:h) x xs
 
 
 goLeft :: Zipper a -> Zipper a
+-- ^Moves the focus of a zipper one to the left
+-- if the focus is already the at the first element,
+-- the zipper remains unchanged.
 goLeft (Zip [] f r) = Zip [] f r
 goLeft (Zip (x:xs) f r) = Zip xs x (f:r)
 

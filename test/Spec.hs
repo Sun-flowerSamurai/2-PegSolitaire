@@ -57,16 +57,21 @@ main = hspec $ do
 
 
   describe "fromZipper" $ do
-    it "should convert the head to a list" $ do
-          fromZipper (Zip [] 2 []) `shouldBe` [2]
-    it "should convert the history to a list with elements shuffled around" $ do
-          fromZipper (Zip [3,2,1] 4 []) `shouldBe` [1,2,3,4]
-    it "should convert the remainder to a list" $ do
-          fromZipper (Zip [] 1 [2,3,4]) `shouldBe` [1,2,3,4]
-    it "should work on multiple types of Zipper I" $ do
-          fromZipper (Zip "cba" 'd' "efg") `shouldBe` "abcdefg"
-    it "should work on multiple types of Zipper II" $ do
-          fromZipper (Zip [Peg, Empty, Peg] Empty [Peg, Empty, Peg]) `shouldBe` [Peg, Empty, Peg, Empty, Peg, Empty, Peg]
+    it "should convert the head to a list" $ 
+      do fromZipper (Zip [] 2 []) 
+      `shouldBe` [2]
+    it "should convert the history to a list with elements shuffled around" $ 
+      do fromZipper (Zip [3, 2, 1] 4 []) 
+      `shouldBe` [1, 2, 3, 4]
+    it "should convert the remainder to a list" $ 
+      do fromZipper (Zip [] 1 [2, 3, 4]) 
+      `shouldBe` [1, 2, 3, 4]
+    it "should work on multiple types of Zipper I" $ 
+      do fromZipper (Zip "cba" 'd' "efg") 
+      `shouldBe` "abcdefg"
+    it "should work on multiple types of Zipper II" $ 
+      do fromZipper (Zip [Peg, Empty, Peg] Empty [Peg, Empty, Peg]) 
+      `shouldBe` [Peg, Empty, Peg, Empty, Peg, Empty, Peg]
     it "list of a zipper with one element should have empty history and remainder" $ 
       do fromZipper (Zip [] 1 []:: Zipper Integer) 
       `shouldBe`  ([1]:: [Integer])

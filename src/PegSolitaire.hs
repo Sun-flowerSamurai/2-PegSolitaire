@@ -129,7 +129,7 @@ generateStates :: Int -> [Pegs]
 -- representing these numbers as their associated pegs. 
 -- This function is exponential as there are 2^n - 1 possible gamestates
 -- and it produces each one individually.
-generateStates n = unfoldr (\w -> if w == -1 then Nothing else Just(to2 n w, w-1)) (2^n - 1)
+generateStates n = unfoldr (\w -> if w == 0 then Nothing else Just(to2 n (w-1), w-1)) (2^n)
  where
 -- to2 :: Int -> Int -> Pegs -- length, number, binary number as pegs
 -- an assumption is that n < 2^l

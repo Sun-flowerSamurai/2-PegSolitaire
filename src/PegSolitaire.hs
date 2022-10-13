@@ -115,6 +115,9 @@ goLeft (Zip (x:xs) f r) = Zip xs x (f:r)
 
 
 listmult :: Int -> [a] -> [a] --nodig voor genlinstates
+-- ^Takes an integer n and a list and creates a new list which is
+-- n repeats of that list.
+-- helper function for genLinearStates
 listmult 0 xs = []
 listmult n xs = xs ++ listmult (n-1) xs 
 

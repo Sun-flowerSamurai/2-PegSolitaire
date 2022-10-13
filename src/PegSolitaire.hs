@@ -142,7 +142,12 @@ generateLinearStates :: Int -> [Pegs]
 -- maar ie werkt
 generateLinearStates n = unfoldr rho n
  where 
-  rho = (\v -> if v == 0 then Nothing else Just(listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1))
+  rho = \v 
+        -> if v == 0 
+          then 
+            Nothing 
+          else 
+            Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 
 makeMoves = error "Implement, document, and test this function"

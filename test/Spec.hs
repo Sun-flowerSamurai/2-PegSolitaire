@@ -58,13 +58,13 @@ main = hspec $ do
 
   describe "fromZipper" $ do
     it "should convert the head to a list" $ 
-      do fromZipper (Zip [] 2 []) 
+      do fromZipper (Zip [] 2 []:: Zipper Integer) 
       `shouldBe` [2]
     it "should convert the history to a list with elements shuffled around" $ 
-      do fromZipper (Zip [3, 2, 1] 4 []) 
+      do fromZipper (Zip [3, 2, 1] 4 []:: Zipper Integer) 
       `shouldBe` [1, 2, 3, 4]
     it "should convert the remainder to a list" $ 
-      do fromZipper (Zip [] 1 [2, 3, 4]) 
+      do fromZipper (Zip [] 1 [2, 3, 4]:: Zipper Integer) 
       `shouldBe` [1, 2, 3, 4]
     it "should work on multiple types of Zipper I" $ 
       do fromZipper (Zip "cba" 'd' "efg") 

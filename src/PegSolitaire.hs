@@ -157,8 +157,20 @@ makeMoves = error "Implement, document, and test this function"
 
 
 unfoldT = error "Implement, document, and test this function"
+
+
 makeGameTree = error "Implement, document, and test this function"
+
+
 hasSolution = error "Implement, document, and test this function"
+
+
 allSolutions = error "Implement, document, and test this function"
+
+
 getSolution = error "Implement, document, and test this function"
+
+
 trySolution = error "Implement, document, and test this function"
+
+

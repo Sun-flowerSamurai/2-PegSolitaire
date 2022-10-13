@@ -114,7 +114,7 @@ goLeft (Zip [] f r) = Zip [] f r
 goLeft (Zip (x:xs) f r) = Zip xs x (f:r)
 
 
-listmult :: Int -> [a] -> [a] --nodig voor genlinstates
+listmult :: Int -> [a] -> [a]
 -- ^Takes an integer n and a list and creates a new list which is
 -- n repeats of that list.
 -- helper function for genLinearStates
@@ -122,27 +122,24 @@ listmult 0 xs = []
 listmult n xs = xs ++ listmult (n-1) xs 
 
 
-to2 :: Int -> Int -> [Int] -- length, getal, base 2
--- assumption is dat n < 2^l
-to2 0 n = []
-to2 l n = if n >= 2^(l-1) then 1: to2 (l-1) (n - 2^(l-1)) else 0 : to2 (l-1) n
-
 
 generateStates :: Int -> [Pegs]
--- kijk hier wordt ie fucked
--- werkt wel maar ziet er lelijk uit
--- wat we zouden kunnen doen is de 1en en 0en gelijk naar pegs converten in de generateBinaries
--- weet niet of het dan efficienter of duidelijker is maar je maakt er dan wel één unfold van wat ze miss willen
-generateStates n = map numsToPeg (generateBinaries n)
+-- ^ Takes a length n and returns all peg solitaire states possible of that length.
+-- Works by generating all numbers in binary of a given length and
+-- representing these numbers as their associated pegs. 
+-- This function is exponential as there are 2^n - 1 possible gamestates
+-- and it produces each one individually.
+generateStates n = unfoldr (\w -> if w == -1 then Nothing else Just(to2 n w, w-1)) (2^n - 1)
  where
-  numsToPeg = map (\v -> if v == 1 then Peg else Empty)
-  generateBinaries n = unfoldr (\w -> if w == -1 then Nothing else Just(to2 n w, w-1)) (2^n - 1)
-  -- ik vind zelf w == -1 ook beetje lelijk maargoed
+-- to2 :: Int -> Int -> Pegs -- length, number, binary number as pegs
+-- an assumption is that n < 2^l
+  to2 0 n = []
+  to2 l n = if n >= 2^(l-1) then Peg: to2 (l-1) (n - 2^(l-1)) else Empty : to2 (l-1) n
 
 
 generateLinearStates :: Int -> [Pegs]
--- vind m een beetje lelijk en jammer dat we listmult nodig hebben
--- maar ie werkt
+-- ^ Generates all the peg solitaire states of length n. 
+-- Uses the function 'listmult' in it's implementation. 
 generateLinearStates n = unfoldr rho n
  where 
   rho = \v 

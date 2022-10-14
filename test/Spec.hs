@@ -41,77 +41,45 @@ main = hspec $ do
   describe "generateStates" $ do
     it "should produce two states for n = 1" $ do
           generateStates 1 `shouldBe` [[Peg], [Empty]]
-    
     it "should produce the empty list for n = 0" $ do
           generateStates 0 `shouldBe` [[]]
     it "should produce 2^n states for n = 10" $ do 
           (length . generateStates) 10 `shouldBe` (2^10 ::Int)
 
-
   describe "generateLinearStates" $ do
     it "should produce just one state for n = 1" $ do
           generateLinearStates 1 `shouldBe` [[Empty]]
-    
     it "should produce the empty list for n = 0" $ do
           generateLinearStates 0 `shouldBe` []
-    
     it "should produce the same amount of states as the length of the first state" $ property $
           forAll naturals (\n -> (length . generateLinearStates) n == (head . map length . generateLinearStates) n)
-<<<<<<< HEAD
     it "should have exactly one empty space in every state and produce n states" $ property $
-=======
-    
-    it "should have one empty space in every state and produce n states" $ property $
->>>>>>> 1719abd671c0ac75d2775cc5327de6d7aa5d99a8
           forAll naturals (\n -> (sum . map (sum . map (\v -> if v == Empty then 1 else 0)) . generateLinearStates) n == n )
 
-
   describe "fromZipper" $ do
-    it "should convert the head to a list" $ 
-      do fromZipper (Zip [] 2 []:: Zipper Integer) 
-      `shouldBe` [2]
-    
-    it "should convert the history to a list with elements shuffled around" $ 
-      do fromZipper (Zip [3, 2, 1] 4 []:: Zipper Integer) 
-      `shouldBe` [1, 2, 3, 4]
-    
-    it "should convert the remainder to a list" $ 
-      do fromZipper (Zip [] 1 [2, 3, 4]:: Zipper Integer) 
-      `shouldBe` [1, 2, 3, 4]
-    
-    it "should work on multiple types of Zipper I" $ 
-      do fromZipper (Zip "cba" 'd' "efg") 
-      `shouldBe` "abcdefg"
-    
-    it "should work on multiple types of Zipper II" $ 
-      do fromZipper (Zip [Peg, Empty, Peg] Empty [Peg, Empty, Peg]) 
-      `shouldBe` [Peg, Empty, Peg, Empty, Peg, Empty, Peg]
-    
-    it "list of a zipper with one element should have empty history and remainder" $ 
-      do fromZipper (Zip [] 1 []:: Zipper Integer) 
-      `shouldBe`  ([1]:: [Integer])
-    
-    it "list of a zipper with one element should have empty history and remainder" $ 
-      do fromZipper (Zip [2, 1] 3 [4, 5]:: Zipper Integer) 
-      `shouldBe`  ([1, 2, 3, 4, 5]:: [Integer])
-
+    it "should convert the head to a list" $ do
+          fromZipper (Zip [] 2 []) `shouldBe` [2]
+    it "should convert the history to a list with elements shuffled around" $ do
+          fromZipper (Zip [3,2,1] 4 []) `shouldBe` [1,2,3,4]
+    it "should convert the remainder to a list" $ do
+          fromZipper (Zip [] 1 [2,3,4]) `shouldBe` [1,2,3,4]
+    it "should work on multiple types of Zipper I" $ do
+          fromZipper (Zip "cba" 'd' "efg") `shouldBe` "abcdefg"
+    it "should work on multiple types of Zipper II" $ do
+          fromZipper (Zip [Peg, Empty, Peg] Empty [Peg, Empty, Peg]) `shouldBe` [Peg, Empty, Peg, Empty, Peg, Empty, Peg]
 
   describe "toZipper" $ do
     it "zipper of empty list is undefined" $ do
           evaluate (toZipper []) `shouldThrow` anyErrorCall 
-    
     it "zipper of list with one element should have empty history and remainder" $ 
       do toZipper ([1]:: [Integer]) 
       `shouldBe` Zip ([]::[Integer]) (1:: Integer) ([]:: [Integer])
-    
     it "toZipper needs to handle lists over different types I" $ 
       do toZipper ([1, 2, 3, 4]:: [Integer]) 
       `shouldBe` Zip ([]::[Integer]) (1:: Integer) ([2, 3, 4]:: [Integer])
-    
     it "toZipper needs to handle lists over different types II" $ 
       do toZipper ("abcdefg" :: String) 
       `shouldBe` Zip ([]:: String) ('a':: Char) ("bcdefg":: String)
-    
     it "toZipper needs to handle lists over different types III" $ 
       do toZipper ([Peg, Empty, Peg, Empty, Peg] :: Pegs) 
       `shouldBe` Zip ([]:: Pegs) (Peg:: Peg) ([Empty, Peg, Empty, Peg]:: Pegs)
@@ -122,41 +90,33 @@ main = hspec $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-
   describe "goLeft" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
-
 
   describe "makeMoves" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-
   describe "foldT" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
-
 
   describe "unfoldT" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-
   describe "makeGameTree" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
-
 
   describe "hasSolution" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
 
-
   describe "allSolutions" $ do
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
-
 
   describe "getSolution" $ do
     it "should have tests" $ do

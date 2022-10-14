@@ -43,6 +43,8 @@ main = hspec $ do
           generateStates 1 `shouldBe` [[Peg], [Empty]]
     it "should produce the empty list for n = 0" $ do
           generateStates 0 `shouldBe` [[]]
+    it "should produce 2^n states for n = 10" $ do 
+          (length . generateStates) 10 `shouldBe` (2^10 ::Int)
 
   describe "generateLinearStates" $ do
     it "should produce just one state for n = 1" $ do
@@ -51,7 +53,7 @@ main = hspec $ do
           generateLinearStates 0 `shouldBe` []
     it "should produce the same amount of states as the length of the first state" $ property $
           forAll naturals (\n -> (length . generateLinearStates) n == (head . map length . generateLinearStates) n)
-    it "should have one empty space in every state and produce n states" $ property $
+    it "should have exactly one empty space in every state and produce n states" $ property $
           forAll naturals (\n -> (sum . map (sum . map (\v -> if v == Empty then 1 else 0)) . generateLinearStates) n == n )
 
   describe "fromZipper" $ do

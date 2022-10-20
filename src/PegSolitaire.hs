@@ -150,8 +150,47 @@ generateLinearStates n = unfoldr rho n
             Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 
---makeMoves :: Zipper Peg -> [Zipper Peg]
-makeMoves = error "a"
+second :: [a] -> a
+second = head . tail
+third :: [a] -> a
+third = head . tail . tail
+fourthplus :: [a] -> [a]
+fourthplus = tail . tail . tail
+
+makeMoves :: Zipper Peg -> [Zipper Peg]
+--assumet op het moment dat lengte van h en r >= 2 is
+-- dus ook dat de zipper lengte >= 2 is
+makeMoves (Zip h f r) = unfoldr alpha h 
+  where
+    alpha ps =
+      if length ps == 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
+        then Nothing
+      else
+        Just(if second ps == Empty
+          then (Zip [] Empty [], tail ps)
+          else
+            if (head ps == Peg && third ps == Empty)
+              then (Zip (take (length h - length ps) h ++[Empty, Empty, Peg] ++ fourthplus ps) f r, tail ps)
+            else
+              if (head ps == Empty && third ps == Peg)
+                then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ fourthplus ps) f r, tail ps)
+              else (Zip [] Empty [], tail ps)
+          )
+    beta (r, states)=
+      if length r == 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
+        then Nothing
+      else
+        Just(if second r == Empty
+          then (tail r, states)
+          else
+            if (head r == Peg && third r == Empty)
+              then (tail r, Zip h f ([Empty, Empty, Peg] ++ fourthplus r) : states)
+            else
+              if (head r == Empty && third r == Peg)
+                then (tail r, Zip h f ([Peg, Empty, Empty] ++ fourthplus r) : states)
+              else (tail r, states)
+          )
+
 --makeMoves (Zip h f r) = unfoldr rho h
 --  where
 --    rho = \v
@@ -168,7 +207,8 @@ unfoldT g x = let (c,d) = g x in rho (c,d)
   where
     rho (c, []) = Leaf c
     rho (c, d) = Node c (map (unfoldT g) d)
-
+-- g can be of the following form:
+-- if p x then (f x, []) else (h x, [xs])
 
 makeGameTree = error "Implement, document, and test this function"
 

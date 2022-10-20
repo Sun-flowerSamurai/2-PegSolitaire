@@ -150,16 +150,16 @@ generateLinearStates n = unfoldr rho n
             Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 
-second :: [a] -> a
+second :: [a] -> a -- ik kwam er dus achter dat hier gwn functies voor zitten in standard library lmao
 second = head . tail
 third :: [a] -> a
 third = head . tail . tail
 fourthplus :: [a] -> [a]
-fourthplus = tail . tail . tail
+fourthplus = tail . tail . tail -- of drop 3
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
 -- assumet dat je geen zipper bestaande uit Zip [] Empty [] invult
-makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r
+makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r)
   where
     alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
       if length ps <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
@@ -189,6 +189,27 @@ makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r
                 then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ fourthplus qs), tail qs)
               else (Zip [] Empty [], tail qs)
           )
+    gamma hs foc rs = --sorry voor de indentation dit is echt garbage tier
+      if foc == Empty --haskell zegt dat is deze if statements kan verbeteren maar ik geloof m niet
+    then if hs == [Peg, Peg]
+         then if rs == [Peg, Peg] 
+              then [Zip ([Empty, Empty] ++ drop 2 h) Peg r, Zip h Peg ([Empty, Empty] ++ drop 2 r)]
+              else [Zip ([Empty, Empty] ++ drop 2 h) Peg r]
+         else if rs == [Peg, Peg]
+              then [Zip h Peg ([Empty, Empty] ++ drop 2 r)]
+              else []
+    else if hs == [Peg, Empty]
+         then if rs == [Peg, Empty]
+              then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Peg ([Empty, Peg] ++ drop 2 r)]
+              else [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
+         else if rs == [Peg, Empty]
+              then [Zip h Peg ([Empty, Peg] ++ drop 2 r)]
+              else []
+
+
+        
+
+
 
 
 

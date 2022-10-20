@@ -150,10 +150,24 @@ generateLinearStates n = unfoldr rho n
             Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 
-makeMoves = error "Implement, document, and test this function"
+--makeMoves :: Zipper Peg -> [Zipper Peg]
+makeMoves = error "a"
+--makeMoves (Zip h f r) = unfoldr rho h
+--  where
+--    rho = \v
+--          -> if v == []
+--            then
+--              Nothing
+--            else
+--              Just(dzeta , tail h)
 
 
-unfoldT = error "Implement, document, and test this function"
+
+unfoldT :: (b -> (a,[b])) -> b -> Tree a
+unfoldT g x = let (c,d) = g x in rho (c,d)
+  where
+    rho (c, []) = Leaf c
+    rho (c, d) = Node c (map (unfoldT g) d)
 
 
 makeGameTree = error "Implement, document, and test this function"

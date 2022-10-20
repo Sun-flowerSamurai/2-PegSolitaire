@@ -158,47 +158,39 @@ fourthplus :: [a] -> [a]
 fourthplus = tail . tail . tail
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
---assumet op het moment dat lengte van h en r >= 2 is
--- dus ook dat de zipper lengte >= 2 is
-makeMoves (Zip h f r) = unfoldr alpha h 
+-- assumet dat je geen zipper bestaande uit Zip [] Empty [] invult
+makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r
   where
-    alpha ps =
-      if length ps == 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
+    alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
+      if length ps <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
         then Nothing
       else
         Just(if second ps == Empty
-          then (Zip [] Empty [], tail ps)
+          then (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           else
             if (head ps == Peg && third ps == Empty)
               then (Zip (take (length h - length ps) h ++[Empty, Empty, Peg] ++ fourthplus ps) f r, tail ps)
             else
               if (head ps == Empty && third ps == Peg)
                 then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ fourthplus ps) f r, tail ps)
-              else (Zip [] Empty [], tail ps)
+              else (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           )
-    beta (r, states)=
-      if length r == 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
+    beta qs = 
+      if length qs <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
         then Nothing
       else
         Just(if second r == Empty
-          then (tail r, states)
+          then (Zip [] Empty [], tail qs)
           else
-            if (head r == Peg && third r == Empty)
-              then (tail r, Zip h f ([Empty, Empty, Peg] ++ fourthplus r) : states)
+            if (head qs == Peg && third qs == Empty)
+              then (Zip h f (take (length r - length qs) r ++ [Empty, Empty, Peg] ++ fourthplus qs), tail qs)
             else
               if (head r == Empty && third r == Peg)
-                then (tail r, Zip h f ([Peg, Empty, Empty] ++ fourthplus r) : states)
-              else (tail r, states)
+                then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ fourthplus qs), tail qs)
+              else (Zip [] Empty [], tail qs)
           )
 
---makeMoves (Zip h f r) = unfoldr rho h
---  where
---    rho = \v
---          -> if v == []
---            then
---              Nothing
---            else
---              Just(dzeta , tail h)
+
 
 
 

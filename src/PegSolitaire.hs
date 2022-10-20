@@ -159,7 +159,7 @@ fourthplus = tail . tail . tail -- of drop 3
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
 -- assumet dat je geen zipper bestaande uit Zip [] Empty [] invult
-makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r)
+makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r) --weet niet of take 2 h klopt eig
   where
     alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
       if length ps <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer

@@ -82,7 +82,7 @@ data Zipper a = Zip [a] a [a] deriving (Eq, Ord) -- History, Focus, Remainder
 -- |Shows a zipper with its history reversed, the focus parenthesized 
 -- and the remainder unchanged.
 instance (Show a) => Show (Zipper a) where
-    show (Zip h f r) = show (show (reverse h) ++ " (" ++ show f ++ ") " ++ show r) 
+    show (Zip h f r) = show (show (reverse h) ++ " (" ++ show f ++ ") " ++ show r)
     --show (Zip h f r) = show h ++ " (" ++ show f ++ ") " ++ show r
 
 
@@ -169,10 +169,10 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
         Just(if second ps == Empty
           then (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           else
-            if (head ps == Peg && third ps == Empty)
+            if head ps == Peg && third ps == Empty
               then (Zip (take (length h - length ps) h ++[Empty, Empty, Peg] ++ fourthplus ps) f r, tail ps)
             else
-              if (head ps == Empty && third ps == Peg)
+              if head ps == Empty && third ps == Peg
                 then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ fourthplus ps) f r, tail ps)
               else (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           )
@@ -183,10 +183,10 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
         Just(if second qs == Empty
           then (Zip [] Empty [], tail qs)
           else
-            if (head qs == Peg && third qs == Empty)
+            if head qs == Peg && third qs == Empty
               then (Zip h f (take (length r - length qs) r ++ [Empty, Empty, Peg] ++ fourthplus qs), tail qs)
             else
-              if (head qs == Empty && third qs == Peg)
+              if head qs == Empty && third qs == Peg
                 then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ fourthplus qs), tail qs)
               else (Zip [] Empty [], tail qs)
           )
@@ -196,16 +196,20 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
          then if rs == [Peg, Peg]
               then [Zip ([Empty, Empty] ++ drop 2 h) Peg r, Zip h Peg ([Empty, Empty] ++ drop 2 r)]
               else [Zip ([Empty, Empty] ++ drop 2 h) Peg r]
-         else if rs == [Peg, Peg]
-              then [Zip h Peg ([Empty, Empty] ++ drop 2 r)]
-              else []
+         else [Zip h Peg ([Empty, Empty] ++ drop 2 r) | rs == [Peg, Peg]]
+    -- hieronder betekent foc == Peg
     else if hs == [Peg, Empty]
          then if rs == [Peg, Empty]
               then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Empty ([Empty, Peg] ++ drop 2 r)]
-              else [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
-         else if rs == [Peg, Empty]
-              then [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
-              else []
+              else if head rs == Empty
+                   then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip ([Empty, Empty] ++ drop 2 h) Empty (Peg: tail r)]
+                   else [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
+    else if hs == [Peg, Peg]
+         then [Zip ([Empty, Peg] ++ drop 2 h) Empty (Peg: drop 1 r) | head rs == Empty]
+    else --so head hs == Empty
+        if rs == [Peg, Empty]
+              then [Zip h Empty ([Empty, Peg] ++ drop 2 r), Zip (Peg : tail h) Empty ([Empty, Empty] ++ drop 2 r)]
+    else [Zip (Peg : tail h) Empty ([Empty, Peg] ++ drop 2 r) | rs == [Peg, Peg]]
 
 
 unfoldT :: (b -> (a,[b])) -> b -> Tree a
@@ -223,9 +227,10 @@ hasSolution :: Zipper Peg -> Bool
 hasSolution = foldT (isWinning . fromZipper) (\v u -> or u) . makeGameTree
 
 allSolutions :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
-allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
+allSolutions = foldT (\leaf -> [fromZipper leaf | (isWinning . fromZipper) leaf]) (\v u -> concat u) . makeGameTree
 
 
+getSolution :: a
 getSolution = error "Implement, document, and test this function"
 
 

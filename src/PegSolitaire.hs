@@ -122,20 +122,26 @@ listmult :: Int -> [a] -> [a]
 listmult 0 xs = []
 listmult n xs = xs ++ listmult (n-1) xs
 
-
+--generateStates' n = unfoldr (\w -> if w == 0 then Nothing else Just(to2 n (w-1), w-1)) (2^n)
+-- where
+-- to2 :: Int -> Int -> Pegs -- length, number, binary number as pegs
+-- an assumption is that n < 2^l
+--  to2 0 n = []
+--  to2 l n = if n >= 2^(l-1) then Peg: to2 (l-1) (n - 2^(l-1)) else Empty : to2 (l-1) n
 
 generateStates :: Int -> [Pegs]
 -- ^ Takes a length n and returns all peg solitaire states possible of that length.
 -- Works by generating all numbers in binary of a given length and
 -- representing these numbers as their associated pegs. 
--- This function is exponential as there are 2^n - 1 possible gamestates
--- and it produces each one individually.
-generateStates n = unfoldr (\w -> if w == 0 then Nothing else Just(to2 n (w-1), w-1)) (2^n)
+generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
  where
--- to2 :: Int -> Int -> Pegs -- length, number, binary number as pegs
--- an assumption is that n < 2^l
-  to2 0 n = []
-  to2 l n = if n >= 2^(l-1) then Peg: to2 (l-1) (n - 2^(l-1)) else Empty : to2 (l-1) n
+  allStatesOfLength :: (Int, [Pegs]) -> Maybe ([Pegs], (Int, [Pegs]))
+  allStatesOfLength (0, _ ) = Nothing
+  allStatesOfLength (n, states)
+   | n == 1 = Just (newStates, (0, []))
+   | n > 1 = Just ([], (n-1, newStates))
+    where
+      newStates = [(Empty:), (Peg:)] <*> states
 
 
 generateLinearStates :: Int -> [Pegs]
@@ -227,7 +233,7 @@ hasSolution :: Zipper Peg -> Bool
 hasSolution = foldT (isWinning . fromZipper) (\v u -> or u) . makeGameTree
 
 allSolutions :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
-allSolutions = foldT (\leaf -> [fromZipper leaf | (isWinning . fromZipper) leaf]) (\v u -> concat u) . makeGameTree
+allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
 
 
 getSolution :: a

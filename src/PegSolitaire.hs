@@ -196,27 +196,20 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
                 then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ fourthplus qs), tail qs)
               else (Zip [] Empty [], tail qs)
           )
-    gamma hs foc rs = --sorry voor de indentation dit is echt garbage tier
-      if foc == Empty --haskell zegt dat is deze if statements kan verbeteren maar ik geloof m niet
-    then if hs == [Peg, Peg]
-         then if rs == [Peg, Peg]
-              then [Zip ([Empty, Empty] ++ drop 2 h) Peg r, Zip h Peg ([Empty, Empty] ++ drop 2 r)]
-              else [Zip ([Empty, Empty] ++ drop 2 h) Peg r]
-         else [Zip h Peg ([Empty, Empty] ++ drop 2 r) | rs == [Peg, Peg]]
-    -- hieronder betekent foc == Peg
-    else if hs == [Peg, Empty]
-         then if rs == [Peg, Empty]
-              then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Empty ([Empty, Peg] ++ drop 2 r)]
-              else if head rs == Empty
-                   then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip ([Empty, Empty] ++ drop 2 h) Empty (Peg: tail r)]
-                   else [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
-    else if hs == [Peg, Peg]
-         then [Zip ([Empty, Peg] ++ drop 2 h) Empty (Peg: drop 1 r) | head rs == Empty]
-    else --so head hs == Empty
-        if rs == [Peg, Empty]
-              then [Zip h Empty ([Empty, Peg] ++ drop 2 r), Zip (Peg : tail h) Empty ([Empty, Empty] ++ drop 2 r)]
-    else [Zip (Peg : tail h) Empty ([Empty, Peg] ++ drop 2 r) | rs == [Peg, Peg]]
-
+    -- foc = Empty:
+    gamma [Peg, Peg] Empty [Peg, Peg] = [Zip ([Empty, Empty] ++ drop 2 h) Peg r, Zip h Peg ([Empty, Empty] ++ drop 2 r)]
+    gamma [Peg, Peg] Empty xs = [Zip ([Empty, Empty] ++ drop 2 h) Peg r]
+    gamma xs Empty [Peg, Peg] = [Zip h Peg ([Empty, Empty] ++ drop 2 r)]
+    -- foc = Peg:
+    gamma [Peg, Empty] Peg [Peg, Empty] = [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Empty ([Empty, Peg] ++ drop 2 r)]
+    gamma [Peg, Empty] Peg (Empty:xs) = [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip ([Empty, Empty] ++ drop 2 h) Empty (Peg: (tail r))]
+    gamma [Peg, Empty] Peg [Peg, Peg] = [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
+    gamma [Peg, Peg] Peg (Empty:xs) = [Zip ([Empty, Peg] ++ drop 2 h) Empty (Peg: (drop 1 r))]
+    gamma [Peg, Peg] Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
+    gamma (Empty:xs) Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r), Zip (Peg : (tail h)) Empty ([Empty, Empty] ++ drop 2 r)]
+    gamma (Empty:xs) Peg [Peg, Peg] = [Zip (Peg : (tail h)) Empty ([Empty, Peg] ++ drop 2 r)]
+    -- als geen van bovenstaande cases true is:
+    gamma hs foc rs = []
 
 unfoldT :: (b -> (a,[b])) -> b -> Tree a
 unfoldT g x = let (c,d) = g x in rho (c,d)

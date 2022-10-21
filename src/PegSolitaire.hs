@@ -58,7 +58,7 @@ isWinning :: Pegs -> Bool
 -- ^Determines whether the Pegs are in a winning state, 
 -- i.e. whether there is only one peg left on the board.
 isWinning = (== 1) . countPegs
-  where 
+  where
     countPegs :: Pegs -> Integer
     countPegs = sum . map (\ v -> if v == Peg then 1 else 0)
 
@@ -71,7 +71,7 @@ foldT :: (a -> b)    -- Leaf function
 -- The Tree type has two constructors and similarly the foldT function 
 -- takes two functions. The function l is applied to the leaves and the 
 -- function n is applied to the nodes.
-foldT l n = rec 
+foldT l n = rec
  where
   rec (Leaf x) = l x
   rec (Node x ts) = n x (map rec ts) -- hier kan je n zien als binary functie, bv cons
@@ -83,6 +83,7 @@ data Zipper a = Zip [a] a [a] deriving (Eq, Ord) -- History, Focus, Remainder
 -- and the remainder unchanged.
 instance (Show a) => Show (Zipper a) where
     show (Zip h f r) = show (show (reverse h) ++ " (" ++ show f ++ ") " ++ show r) 
+    --show (Zip h f r) = show h ++ " (" ++ show f ++ ") " ++ show r
 
 
 fromZipper :: Zipper a -> [a]
@@ -119,7 +120,7 @@ listmult :: Int -> [a] -> [a]
 -- n repeats of that list.
 -- helper function for genLinearStates
 listmult 0 xs = []
-listmult n xs = xs ++ listmult (n-1) xs 
+listmult n xs = xs ++ listmult (n-1) xs
 
 
 
@@ -141,12 +142,12 @@ generateLinearStates :: Int -> [Pegs]
 -- ^ Generates all the peg solitaire states of length n. 
 -- Uses the function 'listmult' in it's implementation. 
 generateLinearStates n = unfoldr rho n
- where 
-  rho = \v 
-        -> if v == 0 
-          then 
-            Nothing 
-          else 
+ where
+  rho = \v
+        -> if v == 0
+          then
+            Nothing
+          else
             Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 
@@ -159,7 +160,7 @@ fourthplus = tail . tail . tail -- of drop 3
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
 -- assumet dat je geen zipper bestaande uit Zip [] Empty [] invult
-makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r) --weet niet of take 2 h klopt eig
+makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r)) --weet niet of take 2 h klopt eig
   where
     alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
       if length ps <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
@@ -175,24 +176,24 @@ makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f 
                 then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ fourthplus ps) f r, tail ps)
               else (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           )
-    beta qs = 
+    beta qs =
       if length qs <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
         then Nothing
       else
-        Just(if second r == Empty
+        Just(if second qs == Empty
           then (Zip [] Empty [], tail qs)
           else
             if (head qs == Peg && third qs == Empty)
               then (Zip h f (take (length r - length qs) r ++ [Empty, Empty, Peg] ++ fourthplus qs), tail qs)
             else
-              if (head r == Empty && third r == Peg)
+              if (head qs == Empty && third qs == Peg)
                 then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ fourthplus qs), tail qs)
               else (Zip [] Empty [], tail qs)
           )
     gamma hs foc rs = --sorry voor de indentation dit is echt garbage tier
       if foc == Empty --haskell zegt dat is deze if statements kan verbeteren maar ik geloof m niet
     then if hs == [Peg, Peg]
-         then if rs == [Peg, Peg] 
+         then if rs == [Peg, Peg]
               then [Zip ([Empty, Empty] ++ drop 2 h) Peg r, Zip h Peg ([Empty, Empty] ++ drop 2 r)]
               else [Zip ([Empty, Empty] ++ drop 2 h) Peg r]
          else if rs == [Peg, Peg]
@@ -200,19 +201,11 @@ makeMoves (Zip h f r) = unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f 
               else []
     else if hs == [Peg, Empty]
          then if rs == [Peg, Empty]
-              then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Peg ([Empty, Peg] ++ drop 2 r)]
+              then [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Empty ([Empty, Peg] ++ drop 2 r)]
               else [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
          else if rs == [Peg, Empty]
-              then [Zip h Peg ([Empty, Peg] ++ drop 2 r)]
+              then [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
               else []
-
-
-        
-
-
-
-
-
 
 
 unfoldT :: (b -> (a,[b])) -> b -> Tree a
@@ -221,15 +214,16 @@ unfoldT g x = let (c,d) = g x in rho (c,d)
     rho (c, []) = Leaf c
     rho (c, d) = Node c (map (unfoldT g) d)
 -- g can be of the following form:
--- if p x then (f x, []) else (h x, [xs])
+-- if p x then (f x, []) else (h x, [some list])
 
-makeGameTree = error "Implement, document, and test this function"
+makeGameTree :: Zipper Peg -> Tree (Zipper Peg)
+makeGameTree = unfoldT (\v -> (v, makeMoves v))
 
+hasSolution :: Zipper Peg -> Bool
+hasSolution = foldT (isWinning . fromZipper) (\v u -> or u) . makeGameTree
 
-hasSolution = error "Implement, document, and test this function"
-
-
-allSolutions = error "Implement, document, and test this function"
+allSolutions :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
+allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
 
 
 getSolution = error "Implement, document, and test this function"

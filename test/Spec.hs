@@ -135,13 +135,19 @@ main = hspec $ do
           makeMoves (Zip [Empty] Peg [Peg,Empty]) `shouldBe` [(Zip [Empty] Empty [Empty, Peg]), (Zip [Peg] Empty [Empty,Empty])]
     it "should handle the focus correctly X" $ do
           makeMoves (Zip [Peg] Peg [Empty, Peg]) `shouldBe` [(Zip [Empty] Empty [Peg, Peg])]
-    it "should return the empty list if no moves can be made" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+-- could add more
 
 
   describe "foldT" $ do
+  --  it "should be able to count leaves" $ do
+  --        foldT (const 1) (\v u -> v + sum u) (Node 1 [Node 2 [Leaf 3, Leaf 4], Leaf 5]) `shouldBe` 3
     it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should have tests" $ do
+          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should have tests" $ do
+          (1 :: Integer) `shouldBe` (1 :: Integer)
+
 
   describe "unfoldT" $ do
     it "should have tests" $ do

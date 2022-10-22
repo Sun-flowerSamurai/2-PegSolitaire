@@ -203,10 +203,12 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     gamma (Empty:xs) Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r), Zip (Peg : (tail h)) Empty ([Empty, Empty] ++ drop 2 r)]
     gamma (Empty:xs) Peg [Peg, Peg] = [Zip (Peg : (tail h)) Empty ([Empty, Peg] ++ drop 2 r)]
     -- foc = Peg maar hist of rem is niet 2 lang:
-    gamma [Empty] Peg (Peg:xs) = [Zip [Peg] Empty (Empty : tail r)]
-    gamma (Peg:xs) Peg [Empty] = [Zip (Empty : tail h) Empty [Peg]] --deze kunnen waarschijnlijk gecombineerd worden met wat dingen boven
     gamma [] Peg [Peg, Empty] = [Zip [] Empty ([Empty, Peg] ++ drop 2 r)]
     gamma [Peg, Empty] Peg [] = [Zip ([Empty, Peg] ++ drop 2 h) Empty []]
+    gamma (Empty:xs) Peg [Peg] = [Zip (Peg : tail h) Empty [Empty]]
+    gamma [Peg] Peg (Empty:xs) = [Zip [Empty] Empty (Peg : tail r)]
+    gamma [Peg, Empty] Peg [Peg] = [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
+    gamma [Peg] Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
     -- als geen van bovenstaande cases true is:
     gamma hs foc rs = []
 

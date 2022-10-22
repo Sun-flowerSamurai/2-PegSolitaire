@@ -40,9 +40,9 @@ main = hspec $ do
 
   describe "generateStates" $ do
     it "should produce two states for n = 1" $ do
-          generateStates 1 `shouldBe` [[Peg], [Empty]]
-    it "should produce the empty list for n = 0" $ do
-          generateStates 0 `shouldBe` [[]]
+          generateStates 1 `shouldBe` [[Empty], [Peg]]
+    it "should produce nothing for n = 0" $ do
+          evaluate(generateStates 0) `shouldThrow` anyErrorCall
     it "should produce 2^n states for n = 10" $ do 
           (length . generateStates) 10 `shouldBe` (2^10 ::Int)
 
@@ -97,16 +97,47 @@ main = hspec $ do
 
   describe "goLeft" $ do
     it "should put focus in the remainder and put first element of history in focus" $ do
-          goRight (Zip [2,1] 3 [4,5]) `shouldBe` (Zip [1] 2 [3,4,5])
+          goLeft (Zip [2,1] 3 [4,5]) `shouldBe` (Zip [1] 2 [3,4,5])
     it "should not go left if there is no space" $ do
-          goRight (Zip [] 1 [2]) `shouldBe` (Zip [] 1 [2])
+          goLeft (Zip [] 1 [2]) `shouldBe` (Zip [] 1 [2])
     it "should do nothing if the zipper only has a focus" $ do
-          goRight (Zip [] 2 []) `shouldBe` (Zip [] 2 [])
+          goLeft (Zip [] 2 []) `shouldBe` (Zip [] 2 [])
 
 
   describe "makeMoves" $ do
-    it "should have tests" $ do
+    it "should return the empty list if no moves can be made (middle)" $ do
+          makeMoves (Zip [Peg,Peg] Peg [Peg,Peg]) `shouldBe` []
+    it "should return the empty list if no moves can be made (remainder)" $ do
+          makeMoves (Zip [Peg,Peg] Peg [Peg,Peg,Peg,Peg,Peg,Peg,Peg]) `shouldBe` []
+    it "should return the empty list if no moves can be made (history)" $ do
+          makeMoves (Zip [Peg,Peg,Peg,Peg,Peg,Peg] Peg [Peg,Peg]) `shouldBe` []
+    it "should make correct moves (history)" $ do
+          makeMoves (Zip [Peg, Empty, Peg, Peg, Empty] Empty []) `shouldBe` [Zip [Peg, Peg, Empty, Empty, Empty] Empty [], Zip [Peg, Empty, Empty, Empty, Peg] Empty []]
+    it "should make correct moves (remainder)" $ do
+          makeMoves (Zip [] Empty [Peg, Empty, Peg, Peg, Empty]) `shouldBe` [Zip [] Empty [Peg, Peg, Empty, Empty, Empty], Zip [] Empty [Peg, Empty, Empty, Empty, Peg]]
+    it "should handle the focus correctly I" $ do
+          makeMoves (Zip [Peg, Peg] Empty [Peg]) `shouldBe` [(Zip [Empty, Empty] Peg [Peg])]
+    it "should handle the focus correctly II" $ do
+          makeMoves (Zip [Peg] Empty [Peg, Peg]) `shouldBe` [(Zip [Peg] Peg [Empty, Empty])]
+    it "should handle the focus correctly III" $ do
+          makeMoves (Zip [Peg, Empty] Peg [Peg]) `shouldBe` [(Zip [Empty, Peg] Empty [Peg])]
+    it "should handle the focus correctly IV" $ do
+          makeMoves (Zip [Empty, Peg] Peg [Peg]) `shouldBe` [(Zip [Peg, Peg] Empty [Empty])]
+    it "should handle the focus correctly V" $ do
+          makeMoves (Zip [Empty, Peg] Peg [Peg,Peg]) `shouldBe` [(Zip [Peg, Peg] Empty [Empty,Peg])]
+    it "should handle the focus correctly VI" $ do
+          makeMoves (Zip [Empty, Peg] Peg [Peg,Empty]) `shouldBe` [(Zip [Empty, Peg] Empty [Empty, Peg]),(Zip [Peg, Peg] Empty [Empty,Empty])]
+    it "should handle the focus correctly VII" $ do
+          makeMoves (Zip [Empty] Peg [Peg]) `shouldBe` [(Zip [Peg] Empty [Empty])]
+    it "should handle the focus correctly VIII" $ do
+          makeMoves (Zip [Empty] Peg [Peg,Peg]) `shouldBe` [(Zip [Peg] Empty [Empty,Peg])]
+    it "should handle the focus correctly IX" $ do
+          makeMoves (Zip [Empty] Peg [Peg,Empty]) `shouldBe` [(Zip [Empty] Empty [Empty, Peg]), (Zip [Peg] Empty [Empty,Empty])]
+    it "should handle the focus correctly X" $ do
+          makeMoves (Zip [Peg] Peg [Empty, Peg]) `shouldBe` [(Zip [Empty] Empty [Peg, Peg])]
+    it "should return the empty list if no moves can be made" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
+
 
   describe "foldT" $ do
     it "should have tests" $ do

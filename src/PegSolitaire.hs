@@ -57,10 +57,7 @@ stringToPegs = map f
 isWinning :: Pegs -> Bool
 -- ^Determines whether the Pegs are in a winning state, 
 -- i.e. whether there is only one peg left on the board.
-isWinning = (== 1) . countPegs
-  where
-    countPegs :: Pegs -> Integer
-    countPegs = sum . map (\ v -> if v == Peg then 1 else 0)
+isWinning = (== 1) . length . filter (== Peg)
 
 
 foldT :: (a -> b)    -- Leaf function
@@ -140,7 +137,7 @@ generateLinearStates n = unfoldr rho n
             Nothing
           else
             Just (replicate (v - 1) Peg ++ [Empty] ++ replicate (n - v) Peg, v - 1)
-
+            -- Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 -- listmult :: Int -> [a] -> [a]
 -- -- ^Takes an integer n and a list and creates a new list which is

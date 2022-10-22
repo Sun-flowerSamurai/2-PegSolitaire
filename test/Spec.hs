@@ -87,12 +87,22 @@ main = hspec $ do
 
 
   describe "goRight" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should put focus in the history and put first element of remainder in focus" $ do
+          goRight (Zip [5] 1 [2,3,4]) `shouldBe` (Zip [1,5] 2 [3,4])
+    it "should not go right if there is no space" $ do
+          goRight (Zip [1] 2 []) `shouldBe` (Zip [1] 2 [])
+    it "should do nothing if the zipper only has a focus" $ do
+          goRight (Zip [] 2 []) `shouldBe` (Zip [] 2 [])
+
 
   describe "goLeft" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should put focus in the remainder and put first element of history in focus" $ do
+          goRight (Zip [2,1] 3 [4,5]) `shouldBe` (Zip [1] 2 [3,4,5])
+    it "should not go left if there is no space" $ do
+          goRight (Zip [] 1 [2]) `shouldBe` (Zip [] 1 [2])
+    it "should do nothing if the zipper only has a focus" $ do
+          goRight (Zip [] 2 []) `shouldBe` (Zip [] 2 [])
+
 
   describe "makeMoves" $ do
     it "should have tests" $ do

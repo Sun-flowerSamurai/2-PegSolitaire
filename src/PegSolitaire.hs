@@ -205,6 +205,8 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     -- foc = Peg maar hist of rem is niet 2 lang:
     gamma [Empty] Peg (Peg:xs) = [Zip [Peg] Empty (Empty : tail r)]
     gamma (Peg:xs) Peg [Empty] = [Zip (Empty : tail h) Empty [Peg]] --deze kunnen waarschijnlijk gecombineerd worden met wat dingen boven
+    gamma [] Peg [Peg, Empty] = [Zip [] Empty ([Empty, Peg] ++ drop 2 r)]
+    gamma [Peg, Empty] Peg [] = [Zip ([Empty, Peg] ++ drop 2 h) Empty []]
     -- als geen van bovenstaande cases true is:
     gamma hs foc rs = []
 

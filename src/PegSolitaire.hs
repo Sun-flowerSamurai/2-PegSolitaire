@@ -155,6 +155,11 @@ makeMoves :: Zipper Peg -> [Zipper Peg]
 -- want als er geen moves zijn dan geeft ie dus deze empty zipper
 -- en returnt ie na de filter []
 -- maar er zijn ook geen moves mogelijk voor de empty zipper dus dit hoort sws
+
+-- mogelijke improvements:
+-- > alpha en beta mooier schrijven
+-- > als het kan, combineren naar een functie
+-- > gamma kan je wss een paar patterns combineren
 makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r)) --weet niet of take 2 h klopt eig
   where
     alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
@@ -220,6 +225,8 @@ hasSolution = foldT (isWinning . fromZipper) (\v u -> or u) . makeGameTree
 allSolutions :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
 allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
 
+allSolutions' :: Zipper Peg -> [Zipper Peg] --Zipper versie, vind zelf de list mooier
+allSolutions' = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [leaf] else []) (\v u -> concat u) . makeGameTree
 
 getSolution :: a
 getSolution = error "Implement, document, and test this function"

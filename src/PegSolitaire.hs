@@ -120,9 +120,7 @@ generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
  where
   allStatesOfLength :: (Int, [Pegs]) -> Maybe ([Pegs], (Int, [Pegs]))
   allStatesOfLength (0, _ ) = Nothing
-  allStatesOfLength (n, states)
-   | n == 1 = Just (newStates, (0, []))
-   | n > 1 = Just ([], (n-1, newStates))
+  allStatesOfLength (n, states) = Just (newStates, (n - 1, newStates))
     where
       newStates = [(Empty:), (Peg:)] <*> states
 
@@ -211,8 +209,9 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     -- als geen van bovenstaande cases true is:
     gamma hs foc rs = []
 
-unfoldT :: (b -> (a,[b])) -> b -> Tree a
-unfoldT g x = let (c,d) = g x in rho (c,d)
+
+unfoldT :: (b -> (a, [b])) -> b -> Tree a
+unfoldT g x = let (c, d) = g x in rho (c, d)
   where
     rho (c, []) = Leaf c
     rho (c, d) = Node c (map (unfoldT g) d)

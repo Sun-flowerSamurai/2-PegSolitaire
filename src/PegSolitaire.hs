@@ -122,13 +122,6 @@ listmult :: Int -> [a] -> [a]
 listmult 0 xs = []
 listmult n xs = xs ++ listmult (n-1) xs
 
---generateStates' n = unfoldr (\w -> if w == 0 then Nothing else Just(to2 n (w-1), w-1)) (2^n)
--- where
--- to2 :: Int -> Int -> Pegs -- length, number, binary number as pegs
--- an assumption is that n < 2^l
---  to2 0 n = []
---  to2 l n = if n >= 2^(l-1) then Peg: to2 (l-1) (n - 2^(l-1)) else Empty : to2 (l-1) n
-
 generateStates :: Int -> [Pegs]
 -- ^ Takes a length n and returns all peg solitaire states possible of that length.
 -- Works by generating all numbers in binary of a given length and
@@ -146,7 +139,7 @@ generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
 
 generateLinearStates :: Int -> [Pegs]
 -- ^ Generates all the peg solitaire states of length n. 
--- Uses the function 'listmult' in it's implementation. 
+-- Uses the function 'listmult' in its implementation. 
 generateLinearStates n = unfoldr rho n
  where
   rho = \v
@@ -157,43 +150,39 @@ generateLinearStates n = unfoldr rho n
             Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
 
 
-second :: [a] -> a -- ik kwam er dus achter dat hier gwn functies voor zitten in standard library lmao
-second = head . tail
-third :: [a] -> a
-third = head . tail . tail
-fourthplus :: [a] -> [a]
-fourthplus = tail . tail . tail -- of drop 3
-
 makeMoves :: Zipper Peg -> [Zipper Peg]
--- assumet dat je geen zipper bestaande uit Zip [] Empty [] invult
+-- We gebruiken Zip [] Empty [] als 'empty zipper' maar dat maakt niet uit
+-- want als er geen moves zijn dan geeft ie dus deze empty zipper
+-- en returnt ie na de filter []
+-- maar er zijn ook geen moves mogelijk voor de empty zipper dus dit hoort sws
 makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r)) --weet niet of take 2 h klopt eig
   where
     alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
       if length ps <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
         then Nothing
       else
-        Just(if second ps == Empty
+        Just(if ps!!1 == Empty --second element
           then (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           else
-            if head ps == Peg && third ps == Empty
-              then (Zip (take (length h - length ps) h ++[Empty, Empty, Peg] ++ fourthplus ps) f r, tail ps)
+            if head ps == Peg && ps!!2 == Empty
+              then (Zip (take (length h - length ps) h ++[Empty, Empty, Peg] ++ drop 3 ps) f r, tail ps)
             else
-              if head ps == Empty && third ps == Peg
-                then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ fourthplus ps) f r, tail ps)
+              if head ps == Empty && ps!!2 == Peg
+                then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ drop 3 ps) f r, tail ps)
               else (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
           )
     beta qs =
       if length qs <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
         then Nothing
       else
-        Just(if second qs == Empty
+        Just(if qs!!1 == Empty --second element
           then (Zip [] Empty [], tail qs)
           else
-            if head qs == Peg && third qs == Empty
-              then (Zip h f (take (length r - length qs) r ++ [Empty, Empty, Peg] ++ fourthplus qs), tail qs)
+            if head qs == Peg && qs!!2 == Empty
+              then (Zip h f (take (length r - length qs) r ++ [Empty, Empty, Peg] ++ drop 3 qs), tail qs)
             else
-              if head qs == Empty && third qs == Peg
-                then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ fourthplus qs), tail qs)
+              if head qs == Empty && qs!!2 == Peg
+                then (Zip h f (take (length r - length qs) r ++ [Peg, Empty, Empty] ++ drop 3 qs), tail qs)
               else (Zip [] Empty [], tail qs)
           )
     -- foc = Empty:
@@ -208,6 +197,9 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     gamma [Peg, Peg] Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
     gamma (Empty:xs) Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r), Zip (Peg : (tail h)) Empty ([Empty, Empty] ++ drop 2 r)]
     gamma (Empty:xs) Peg [Peg, Peg] = [Zip (Peg : (tail h)) Empty ([Empty, Peg] ++ drop 2 r)]
+    -- foc = Peg maar hist of rem is niet 2 lang:
+    gamma [Empty] Peg (Peg:xs) = [Zip [Peg] Empty (Empty : tail r)]
+    gamma (Peg:xs) Peg [Empty] = [Zip (Empty : tail h) Empty [Peg]] --deze kunnen waarschijnlijk gecombineerd worden met wat dingen boven
     -- als geen van bovenstaande cases true is:
     gamma hs foc rs = []
 

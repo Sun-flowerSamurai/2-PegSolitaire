@@ -12,9 +12,14 @@ import           Test.QuickCheck
 import           Control.Exception              ( evaluate )
 import PegSolitaire
 import PegSolitaire (generateLinearStates, generateStates)
+--import PegSolitaire (Tree(..))
 import GHC.RTS.Flags (MiscFlags(generateStackTrace))
 naturals :: Gen Int
 naturals = choose (1, 1000)
+
+--data Tree a = Leaf a | Node a [Tree a] deriving (Show)
+testTree = makeGameTree (Zip [] Peg [Peg, Empty, Peg, Peg])
+answerTree = Node 3 [Leaf 0,Node 1 [Leaf 0],Node 2 [Leaf 0,Node 1 [Leaf 0]]]
 
 main :: IO ()
 main = hspec $ do
@@ -137,21 +142,32 @@ main = hspec $ do
           makeMoves (Zip [Peg] Peg [Empty, Peg]) `shouldBe` [(Zip [Empty] Empty [Peg, Peg])]
 -- could add more
 
-
+--testTree = makeGameTree (Zip [] Peg [Peg, Empty, Peg, Peg]) defined above
+--testTree = Node " (X)  X  .  X  X " [Node " (X)  X  X  .  . " [Leaf " (X)  .  .  X  . "],Node " (.)  .  X  X  X " [Leaf " (.)  X  .  .  X "]] 
   describe "foldT" $ do
   --  it "should be able to count leaves" $ do
   --        foldT (const 1) (\v u -> v + sum u) (Node 1 [Node 2 [Leaf 3, Leaf 4], Leaf 5]) `shouldBe` 3
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+  -- constructors dont work? idk
+    it "should be able to count leaves" $ do
+          foldT (const 1) (\v u -> sum u) testTree `shouldBe` 2
+    it "should be able to count nodes" $ do
+          foldT (const 0) (\v u -> 1 + sum u) testTree `shouldBe` 3
+    it "should be able to find maximum depth" $ do
+          foldT (const 1) (\v u -> 1 + maximum u) testTree `shouldBe` 3
+    it "should be able to make a list from a tree" $ do
+          length ( foldT (:[]) (\v u -> v:(concat u)) testTree) `shouldBe` 5
+-- if constructors work, can add more
 
 
   describe "unfoldT" $ do
     it "should have tests" $ do
+          unfoldT (\v -> if v == 0 then (0,[]) else (v, filter (< v) [0,1,2,3])) 3 `shouldBe` answerTree --doet het niet idk
+    it "should have tests" $ do
           (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should have tests" $ do
+          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should have tests" $ do
+          (1 :: Integer) `shouldBe` (1 :: Integer)          
 
   describe "makeGameTree" $ do
     it "should have tests" $ do

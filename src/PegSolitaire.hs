@@ -11,6 +11,7 @@ module PegSolitaire
     Peg(..),
     Pegs,
     stringToPegs,
+    Tree(..),
     ----
     isWinning,
     generateStates,

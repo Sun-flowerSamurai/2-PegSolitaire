@@ -128,7 +128,8 @@ generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
 
 
 generateLinearStates :: Int -> [Pegs]
--- ^ Generates all the peg solitaire states of length n. 
+-- ^Generates all the peg solitaire states of length n. 
+-- This achieved using an anamorphism. 
 generateLinearStates n = unfoldr rho n
  where
   rho = \v

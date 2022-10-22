@@ -136,15 +136,6 @@ generateLinearStates n = unfoldr rho n
             Nothing
           else
             Just (replicate (v - 1) Peg ++ [Empty] ++ replicate (n - v) Peg, v - 1)
-            -- Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
-
--- listmult :: Int -> [a] -> [a]
--- -- ^Takes an integer n and a list and creates a new list which is
--- -- n repeats of that list.
--- -- helper function for genLinearStates
--- listmult 0 xs = []
--- listmult n xs = xs ++ listmult (n-1) xs
-
 
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
@@ -209,7 +200,7 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     -- als geen van bovenstaande cases true is:
     gamma hs foc rs = []
 
-
+  
 unfoldT :: (b -> (a, [b])) -> b -> Tree a
 unfoldT g x = let (c, d) = g x in rho (c, d)
   where

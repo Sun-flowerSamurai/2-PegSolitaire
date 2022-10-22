@@ -115,13 +115,6 @@ goLeft (Zip [] f r) = Zip [] f r
 goLeft (Zip (x:xs) f r) = Zip xs x (f:r)
 
 
-listmult :: Int -> [a] -> [a]
--- ^Takes an integer n and a list and creates a new list which is
--- n repeats of that list.
--- helper function for genLinearStates
-listmult 0 xs = []
-listmult n xs = xs ++ listmult (n-1) xs
-
 generateStates :: Int -> [Pegs]
 -- ^ Takes a length n and returns all peg solitaire states possible of that length.
 -- Works by generating all numbers in binary of a given length and
@@ -139,7 +132,6 @@ generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
 
 generateLinearStates :: Int -> [Pegs]
 -- ^ Generates all the peg solitaire states of length n. 
--- Uses the function 'listmult' in its implementation. 
 generateLinearStates n = unfoldr rho n
  where
   rho = \v
@@ -147,7 +139,16 @@ generateLinearStates n = unfoldr rho n
           then
             Nothing
           else
-            Just (listmult (v-1) [Peg] ++ [Empty] ++ listmult (n-v) [Peg], v-1)
+            Just (replicate (v - 1) Peg ++ [Empty] ++ replicate (n - v) Peg, v - 1)
+
+
+-- listmult :: Int -> [a] -> [a]
+-- -- ^Takes an integer n and a list and creates a new list which is
+-- -- n repeats of that list.
+-- -- helper function for genLinearStates
+-- listmult 0 xs = []
+-- listmult n xs = xs ++ listmult (n-1) xs
+
 
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
@@ -198,7 +199,7 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     gamma [Peg, Empty] Peg [Peg, Empty] = [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip h Empty ([Empty, Peg] ++ drop 2 r)]
     gamma [Peg, Empty] Peg (Empty:xs) = [Zip ([Empty, Peg] ++ drop 2 h) Empty r, Zip ([Empty, Empty] ++ drop 2 h) Empty (Peg: (tail r))]
     gamma [Peg, Empty] Peg [Peg, Peg] = [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
-    gamma [Peg, Peg] Peg (Empty:xs) = [Zip ([Empty, Peg] ++ drop 2 h) Empty (Peg: (drop 1 r))]
+    gamma [Peg, Peg] Peg (Empty:xs) = [Zip ([Empty, Peg] ++ drop 2 h) Empty (Peg: drop 1 r)]
     gamma [Peg, Peg] Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
     gamma (Empty:xs) Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r), Zip (Peg : (tail h)) Empty ([Empty, Empty] ++ drop 2 r)]
     gamma (Empty:xs) Peg [Peg, Peg] = [Zip (Peg : (tail h)) Empty ([Empty, Peg] ++ drop 2 r)]

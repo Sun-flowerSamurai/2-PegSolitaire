@@ -38,7 +38,7 @@ data Peg = Empty | Peg deriving (Eq, Ord)
 
 type Pegs = [Peg]
 
-data Tree a = Leaf a | Node a [Tree a] deriving (Show)
+data Tree a = Leaf a | Node a [Tree a] deriving (Eq, Show)
 
 instance Show Peg where
   show Empty = "."

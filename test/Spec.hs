@@ -48,7 +48,7 @@ main = hspec $ do
           generateStates 1 `shouldBe` [[Empty], [Peg]]
     it "should produce nothing for n = 0" $ do
           evaluate(generateStates 0) `shouldThrow` anyErrorCall
-    it "should produce 2^n states for n = 10" $ do 
+    it "should produce 2^n states for n = 10" $ do
           (length . generateStates) 10 `shouldBe` (2^10 ::Int)
 
   describe "generateLinearStates" $ do
@@ -75,18 +75,18 @@ main = hspec $ do
 
   describe "toZipper" $ do
     it "zipper of empty list is undefined" $ do
-          evaluate (toZipper []) `shouldThrow` anyErrorCall 
-    it "zipper of list with one element should have empty history and remainder" $ 
-      do toZipper ([1]:: [Integer]) 
+          evaluate (toZipper []) `shouldThrow` anyErrorCall
+    it "zipper of list with one element should have empty history and remainder" $
+      do toZipper ([1]:: [Integer])
       `shouldBe` Zip ([]::[Integer]) (1:: Integer) ([]:: [Integer])
-    it "toZipper needs to handle lists over different types I" $ 
-      do toZipper ([1, 2, 3, 4]:: [Integer]) 
+    it "toZipper needs to handle lists over different types I" $
+      do toZipper ([1, 2, 3, 4]:: [Integer])
       `shouldBe` Zip ([]::[Integer]) (1:: Integer) ([2, 3, 4]:: [Integer])
-    it "toZipper needs to handle lists over different types II" $ 
-      do toZipper ("abcdefg" :: String) 
+    it "toZipper needs to handle lists over different types II" $
+      do toZipper ("abcdefg" :: String)
       `shouldBe` Zip ([]:: String) ('a':: Char) ("bcdefg":: String)
-    it "toZipper needs to handle lists over different types III" $ 
-      do toZipper ([Peg, Empty, Peg, Empty, Peg] :: Pegs) 
+    it "toZipper needs to handle lists over different types III" $
+      do toZipper ([Peg, Empty, Peg, Empty, Peg] :: Pegs)
       `shouldBe` Zip ([]:: Pegs) (Peg:: Peg) ([Empty, Peg, Empty, Peg]:: Pegs)
 
 
@@ -156,26 +156,45 @@ main = hspec $ do
           foldT (const 1) (\v u -> 1 + maximum u) testTree `shouldBe` 3
     it "should be able to make a list from a tree" $ do
           length ( foldT (:[]) (\v u -> v:(concat u)) testTree) `shouldBe` 5
+    it "should be able to replicate the identity function" $ do
+          foldT (Leaf) (Node) testTree `shouldBe` testTree
 -- if constructors work, can add more
 
 
   describe "unfoldT" $ do
---    it "should have tests" $ do
---          unfoldT (\v -> if v == 0 then (0,[]) else (v, filter (< v) [0,1,2,3])) 3 `shouldBe` answerTree --doet het niet idk
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)          
+    it "should be able to build trees as an anamorphism" $ do
+          unfoldT (\v -> if v == 0 then (0,[]) else (v, filter (\w -> w < v) [0,1,2,3])) (3 :: Int) `shouldBe` answerTree --doet het niet idk
+    it "should be able to build a tree full of constants" $ do
+          unfoldT (\v -> if v == 0 then ((1 :: Int),[]) else (1, [v-1])) (3::Int) `shouldBe` Node 1 [Node 1 [Node 1 [Leaf 1]]]
+    it "should be polymorphic (lists)" $ do
+          unfoldT (\vs -> if length vs == 1 then (head vs, []) else (sum vs, (map (:[]) vs))) [5, 3, 1] `shouldBe` Node 9 [Leaf 5, Leaf 3, Leaf 1]
 
   describe "makeGameTree" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should produce just a leaf when no move can be made (remainder)" $ do
+          makeGameTree (Zip [] Peg [Peg, Peg]) `shouldBe` Leaf (Zip [] Peg [Peg, Peg])
+    it "should produce just a leaf when no move can be made (history)" $ do
+          makeGameTree (Zip [Empty, Empty] Peg []) `shouldBe` Leaf (Zip [Empty, Empty] Peg [])
+    it "should produce just a node when one move can be made" $ do
+          makeGameTree (Zip [] Peg [Peg, Empty]) `shouldBe` Node (Zip [] Peg [Peg, Empty]) [Leaf (Zip [] Empty [Empty, Peg])]
+    it "should produce multiple leafs when multiple moves can be made" $ do
+          makeGameTree (Zip [] Empty [Peg, Peg, Empty]) `shouldBe` Node (Zip [] Empty [Peg, Peg, Empty]) [Leaf (Zip [] Empty [Empty, Empty, Peg]), Leaf (Zip [] Peg [Empty, Empty, Empty])]
+    it "should be able to handle edge case of 1 peg" $ do
+          makeGameTree (Zip [] Peg []) `shouldBe` Leaf (Zip [] Peg [])
 
   describe "hasSolution" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should return false for an empty board (board with exactly one peg wins)" $ do
+          hasSolution (Zip [] Empty [Empty, Empty, Empty]) `shouldBe` False
+    it "should return true for a board which has one peg" $ do
+          hasSolution (Zip [] Empty [Empty, Peg, Empty, Empty]) `shouldBe` True
+    it "should return true for a winnable board with one move" $ do
+          hasSolution (Zip [] Empty [Peg, Peg, Empty]) `shouldBe` True
+    it "should return true for a winnable board with two moves, where a wrong move can be made" $ do
+          hasSolution (Zip [] Empty [Peg, Peg, Empty, Peg]) `shouldBe` True
+    it "should return false for an unwinnable board" $ do
+          hasSolution (Zip [] Empty [Peg, Peg, Empty, Empty, Peg]) `shouldBe` False
+    it "should return false for any board with an even amount of pegs" $ do
+          any (hasSolution . toZipper) (generateLinearStates 9) `shouldBe` False
+
 
   describe "allSolutions" $ do
     it "should have tests" $ do

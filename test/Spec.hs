@@ -12,12 +12,10 @@ import           Test.QuickCheck
 import           Control.Exception              ( evaluate )
 import PegSolitaire
 import PegSolitaire (generateLinearStates, generateStates)
---import PegSolitaire (Tree(..))
 import GHC.RTS.Flags (MiscFlags(generateStackTrace))
 naturals :: Gen Int
 naturals = choose (1, 1000)
 
---data Tree a = Leaf a | Node a [Tree a] deriving (Show)
 testTree = makeGameTree (Zip [] Peg [Peg, Empty, Peg, Peg])
 answerTree = Node 3 [Leaf 0,Node 1 [Leaf 0],Node 2 [Leaf 0,Node 1 [Leaf 0]]]
 
@@ -140,7 +138,6 @@ main = hspec $ do
           makeMoves (Zip [Empty] Peg [Peg,Empty]) `shouldBe` [(Zip [Empty] Empty [Empty, Peg]), (Zip [Peg] Empty [Empty,Empty])]
     it "should handle the focus correctly X" $ do
           makeMoves (Zip [Peg] Peg [Empty, Peg]) `shouldBe` [(Zip [Empty] Empty [Peg, Peg])]
--- could add more
 
 --testTree = makeGameTree (Zip [] Peg [Peg, Empty, Peg, Peg]) defined above
 --testTree = Node " (X)  X  .  X  X " [Node " (X)  X  X  .  . " [Leaf " (X)  .  .  X  . "],Node " (.)  .  X  X  X " [Leaf " (.)  X  .  .  X "]] 
@@ -155,7 +152,8 @@ main = hspec $ do
           length ( foldT (:[]) (\v u -> v:(concat u)) testTree) `shouldBe` 5
     it "should be able to replicate the identity function" $ do
           foldT (Leaf) (Node) testTree `shouldBe` testTree
--- if constructors work, can add more
+    it "should be able to apply a function to values in leaves and nodes" $ do
+          foldT (*2) (\v u -> v + product u) (Node 1 [Leaf 3, Leaf 5]) `shouldBe` 61
 
 
   describe "unfoldT" $ do
@@ -194,10 +192,18 @@ main = hspec $ do
 
 
   describe "allSolutions" $ do
-    it "should return the empty list when there is no solution" $ do
+    it "should return the empty list when there is no solution (no moves)" $ do
           allSolutions (Zip [] Empty [Peg, Empty, Peg]) `shouldBe` []
     it "should return the empty list when there is no solution" $ do
-          allSolutions (Zip [] Empty [Peg, Empty, Peg]) `shouldBe` []          
+          (allSolutions . toZipper) ((generateLinearStates 9)!!1) `shouldBe` []
+    it "should return a list with the solution when there is only one" $ do
+          allSolutions (Zip [] Peg [Peg, Empty]) `shouldBe` [Zip [] Empty [Empty, Peg]]
+    it "should return a list with the boardstate when it is already winning" $ do
+          allSolutions (Zip [Empty] Peg [Empty, Empty]) `shouldBe` [Zip [Empty] Peg [Empty, Empty]]
+    it "should return a list with multiple boardstates if multiple are possible" $ do
+          allSolutions (Zip [] Empty [Peg, Peg, Empty]) `shouldBe` [Zip [] Empty [Empty, Empty, Peg], Zip [] Peg [Empty, Empty, Empty]]
+    it "should always return winning boardstates" $ do
+          all (isWinning . fromZipper) (allSolutions (Zip [] Empty [Peg, Peg, Peg, Empty, Peg, Peg, Empty, Peg, Peg])) `shouldBe` True
 
   describe "getSolution" $ do
     it "should have tests" $ do

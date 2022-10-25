@@ -216,11 +216,11 @@ makeGameTree = unfoldT (\v -> (v, makeMoves v))
 hasSolution :: Zipper Peg -> Bool
 hasSolution = foldT (isWinning . fromZipper) (\v u -> or u) . makeGameTree
 
-allSolutions :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
-allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
+allSolutions' :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
+allSolutions' = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
 
-allSolutions' :: Zipper Peg -> [Zipper Peg] --Zipper versie, vind zelf de list mooier
-allSolutions' = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [leaf] else []) (\v u -> concat u) . makeGameTree
+allSolutions :: Zipper Peg -> [Zipper Peg] --Zipper versie, vind zelf de list mooier
+allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [leaf] else []) (\v u -> concat u) . makeGameTree
 
 getSolution :: a
 getSolution = error "Implement, document, and test this function"

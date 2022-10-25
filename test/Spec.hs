@@ -145,9 +145,6 @@ main = hspec $ do
 --testTree = makeGameTree (Zip [] Peg [Peg, Empty, Peg, Peg]) defined above
 --testTree = Node " (X)  X  .  X  X " [Node " (X)  X  X  .  . " [Leaf " (X)  .  .  X  . "],Node " (.)  .  X  X  X " [Leaf " (.)  X  .  .  X "]] 
   describe "foldT" $ do
-  --  it "should be able to count leaves" $ do
-  --        foldT (const 1) (\v u -> v + sum u) (Node 1 [Node 2 [Leaf 3, Leaf 4], Leaf 5]) `shouldBe` 3
-  -- constructors dont work? idk
     it "should be able to count leaves" $ do
           foldT (const 1) (\v u -> sum u) testTree `shouldBe` 2
     it "should be able to count nodes" $ do
@@ -163,7 +160,7 @@ main = hspec $ do
 
   describe "unfoldT" $ do
     it "should be able to build trees as an anamorphism" $ do
-          unfoldT (\v -> if v == 0 then (0,[]) else (v, filter (\w -> w < v) [0,1,2,3])) (3 :: Int) `shouldBe` answerTree --doet het niet idk
+          unfoldT (\v -> if v == 0 then (0,[]) else (v, filter (< v) [0,1,2,3])) (3 :: Int) `shouldBe` answerTree
     it "should be able to build a tree full of constants" $ do
           unfoldT (\v -> if v == 0 then ((1 :: Int),[]) else (1, [v-1])) (3::Int) `shouldBe` Node 1 [Node 1 [Node 1 [Leaf 1]]]
     it "should be polymorphic (lists)" $ do
@@ -197,8 +194,10 @@ main = hspec $ do
 
 
   describe "allSolutions" $ do
-    it "should have tests" $ do
-          (1 :: Integer) `shouldBe` (1 :: Integer)
+    it "should return the empty list when there is no solution" $ do
+          allSolutions (Zip [] Empty [Peg, Empty, Peg]) `shouldBe` []
+    it "should return the empty list when there is no solution" $ do
+          allSolutions (Zip [] Empty [Peg, Empty, Peg]) `shouldBe` []          
 
   describe "getSolution" $ do
     it "should have tests" $ do

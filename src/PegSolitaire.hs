@@ -115,8 +115,9 @@ goLeft (Zip (x:xs) f r) = Zip xs x (f:r)
 
 generateStates :: Int -> [Pegs]
 -- ^ Takes a length n and returns all peg solitaire states possible of that length.
--- Works by generating all numbers in binary of a given length and
+-- Previously worked by generating all numbers in binary of a given length and
 -- representing these numbers as their associated pegs. 
+-- We have adapted the code as given in the instruction, as it has better runtime complexity.
 generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
  where
   allStatesOfLength :: (Int, [Pegs]) -> Maybe ([Pegs], (Int, [Pegs]))
@@ -128,7 +129,7 @@ generateStates len = last $ unfoldr allStatesOfLength (len, [[]])
 
 generateLinearStates :: Int -> [Pegs]
 -- ^Generates all the peg solitaire states of length n. 
--- This achieved using an anamorphism. 
+-- This is achieved using an anamorphism. 
 generateLinearStates n = unfoldr rho n
  where
   rho = \v
@@ -140,30 +141,24 @@ generateLinearStates n = unfoldr rho n
 
 
 makeMoves :: Zipper Peg -> [Zipper Peg]
--- We gebruiken Zip [] Empty [] als 'empty zipper' maar dat maakt niet uit
--- want als er geen moves zijn dan geeft ie dus deze empty zipper
--- en returnt ie na de filter []
--- maar er zijn ook geen moves mogelijk voor de empty zipper dus dit hoort sws
-
--- mogelijke improvements:
--- > alpha en beta mooier schrijven
--- > als het kan, combineren naar een functie
--- > gamma kan je wss een paar patterns combineren
-makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r)) --weet niet of take 2 h klopt eig
+-- ^Produces a list of all possible movs in peg solitaire,
+-- when given a zipper of pegs. Uses two anamorphisms on the
+-- history and remainder, and pattern-matches around the focus.
+makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr beta r ++ gamma (take 2 h) f (take 2 r))
   where
     alpha ps = -- hier gebruik ik Zip [] Empty [] als 'empty zipper', want geloof niet dat ik een empty element toe kan voegen
       if length ps <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
         then Nothing
       else
         Just(if ps!!1 == Empty --second element
-          then (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
+          then (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt als volgende state
           else
             if head ps == Peg && ps!!2 == Empty
               then (Zip (take (length h - length ps) h ++[Empty, Empty, Peg] ++ drop 3 ps) f r, tail ps)
             else
               if head ps == Empty && ps!!2 == Peg
                 then (Zip (take (length h - length ps) h ++[Peg, Empty, Empty] ++ drop 3 ps) f r, tail ps)
-              else (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn, maar wel dat ie tail ps pakt
+              else (Zip [] Empty [], tail ps) --dit moet eigenlijk dus niks zijn
           )
     beta qs =
       if length qs <= 2 -- niet meer mogelijk om dan te springen, er is geen ruimte meer
@@ -198,29 +193,43 @@ makeMoves (Zip h f r) = filter (/= Zip [] Empty []) (unfoldr alpha h ++ unfoldr 
     gamma [Peg] Peg (Empty:xs) = [Zip [Empty] Empty (Peg : tail r)]
     gamma [Peg, Empty] Peg [Peg] = [Zip ([Empty, Peg] ++ drop 2 h) Empty r]
     gamma [Peg] Peg [Peg, Empty] = [Zip h Empty ([Empty, Peg] ++ drop 2 r)]
-    -- als geen van bovenstaande cases true is:
+    -- als geen van bovenstaande cases true is (dus geen moves mogelijk):
     gamma hs foc rs = []
 
   
 unfoldT :: (b -> (a, [b])) -> b -> Tree a
+-- ^Anamorphism factory for the tree type. 
+-- Takes in a function which associates a value in b with
+-- a value in a, tupled with a list in b which form the subtrees.
+-- Produces a leaf if this list of subtrees is empty, and a Node otherwise.
+-- Example of a function which can be passed onto unfoldT: if p x then (l x, []) else (n x, st x)
+-- where st :: b -> [b].
 unfoldT g x = let (c, d) = g x in rho (c, d)
   where
     rho (c, []) = Leaf c
     rho (c, d) = Node c (map (unfoldT g) d)
--- g can be of the following form:
--- if p x then (f x, []) else (h x, [some list])
+
 
 makeGameTree :: Zipper Peg -> Tree (Zipper Peg)
+-- ^Makes a Tree of all possible moves from an initial gamestate (given as zipper)
+-- for peg solitaire via unfoldT. Gamestates are saved in the Nodes, and states in which no moves
+-- can be made are stored inside Leaves.
 makeGameTree = unfoldT (\v -> (v, makeMoves v))
 
 hasSolution :: Zipper Peg -> Bool
+-- ^Determines whether a game of peg solitaire with given gamestate (given as zipper)
+-- is winnable. This means that it is reducibleto a states satisfying the isWinning function
+-- by making moves from the initial gamestate. Is defined as a hylomorphism with Trees as virtual type.
 hasSolution = foldT (isWinning . fromZipper) (\v u -> or u) . makeGameTree
 
-allSolutions' :: Zipper Peg -> [Pegs] --vragen of we de gamestates als zippers moeten opslaan of dat het ook als list mag
-allSolutions' = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
-
-allSolutions :: Zipper Peg -> [Zipper Peg] --Zipper versie, vind zelf de list mooier
+allSolutions :: Zipper Peg -> [Zipper Peg] 
+-- ^Given an initial gamestate (as zipper), returns all winning gamestates which are possible
+-- by making moves from the initial gamestate as a list of zippers. Is defined using a hylomorphism.
 allSolutions = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [leaf] else []) (\v u -> concat u) . makeGameTree
+
+allSolutions' :: Zipper Peg -> [Pegs]
+-- ^ See allSolutions. Returns a list of Pegs instead of a list of Zipper Peg.
+allSolutions' = foldT (\leaf -> if (isWinning . fromZipper) leaf == True then [fromZipper leaf] else []) (\v u -> concat u) . makeGameTree
 
 getSolution :: a
 getSolution = error "Implement, document, and test this function"
